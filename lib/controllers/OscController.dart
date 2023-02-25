@@ -3,7 +3,31 @@ import 'package:get/get.dart';
 import 'package:osc/osc.dart';
 import 'package:stagecon/widgets/TimerDisplay.dart';
 
-typedef TimerEventCallback = Function(String, TimerDisplayMode, Duration, bool);
+typedef TimerEventCallback = Function(TimerEventOptions);
+
+enum TimerEventOperation {
+  set,
+  reset,
+  start,
+  stop,
+  delete,
+  format
+}
+
+class TimerEventOptions {
+  final String id;
+  final TimerDisplayMode? mode;
+  final Duration? startingAt;
+  final bool? running;
+  final TimerEventOperation operation;
+  const TimerEventOptions({
+    required this.id,
+    required this.operation,
+    this.mode,
+    this.startingAt,
+    this.running
+  });
+}
 
 class OSCcontroler extends GetxController{
   late OSCSocket socket;
@@ -17,16 +41,21 @@ class OSCcontroler extends GetxController{
         print(element);
         print(element.runtimeType);
       });
-
-      if(msg.address.startsWith("/stagecon/stopwatch/")) {
-        int argLen = msg.arguments.length;
+      bool stopwatchCommand = msg.address.startsWith("/stagecon/stopwatch/");
+      bool countdownCommand = msg.address.startsWith("/stagecon/countdown/");
+      bool messageCommand = msg.address.startsWith("/stagecon/message/");
+      if(countdownCommand || stopwatchCommand) {
+        
         //this is a stagecon message
         print("Received stagecon stopwatch OSC message");
         try {
-          if(msg.address.contains("set")) {
+          TimerDisplayMode mode = stopwatchCommand?TimerDisplayMode.stopwatch:TimerDisplayMode.countdown;
+          int argLen = msg.arguments.length;
+          String id =  msg.arguments[0] as String;
+          if(msg.address.contains("/set")) {
             //set command
             // print
-            String id =  msg.arguments[0] as String;
+            
             int ms =  argLen >1?(msg.arguments[1] as int? ?? 0):0;
             int s = argLen >2?(msg.arguments[2] as int? ?? 0):0;
             int m = argLen >3?(msg.arguments[3] as int? ?? 0):0;
@@ -35,6 +64,23 @@ class OSCcontroler extends GetxController{
             final duration = Duration(days: d, hours: h, minutes: m, seconds: s, milliseconds: ms);
             print(duration);
 
+            callTimerEventListeners(TimerEventOptions(id: id, operation: TimerEventOperation.set, startingAt: duration, mode: mode));
+          } else if (msg.address.contains("/start",19)) {
+            callTimerEventListeners(TimerEventOptions(id: id, operation: TimerEventOperation.start));
+          } else if (msg.address.contains("/stop",19)) {
+            callTimerEventListeners(TimerEventOptions(id: id, operation: TimerEventOperation.stop));
+          } else if (msg.address.contains("/reset",19)) {
+            callTimerEventListeners(TimerEventOptions(id: id, operation: TimerEventOperation.reset));
+          } else if (msg.address.contains("/delete",19)) {
+            callTimerEventListeners(TimerEventOptions(id: id, operation: TimerEventOperation.delete));
+          } else if (msg.address.contains("/format",19)) {
+            callTimerEventListeners(TimerEventOptions(id: id, operation: TimerEventOperation.format, ));
+          } else {
+            Get.showSnackbar(GetSnackBar(
+              title: "OSC Error: ${msg.address}",
+              duration: const Duration(seconds: 3),
+              message: "Unknown Operation",
+            ));
           }
 
         } catch (e) {
@@ -58,7 +104,10 @@ class OSCcontroler extends GetxController{
   removeTimerEventListener(TimerEventCallback func) {
     timerListeners.remove(func);
   }
-  callTimerEventListeners(String id, TimerDisplayMode mode, Duration startDuration) {}
+  callTimerEventListeners(TimerEventOptions options) {
+    // print("HI");
+    timerListeners.forEach((element) {element(options);});
+  }
 
 
   void dispose() {
