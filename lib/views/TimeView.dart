@@ -25,6 +25,8 @@ class _TimeViewState extends State<TimeView> {
     //  "test6": TimerDisplay(startingAt: Duration.zero, running: true,),
     //  "test7 and 8 and": TimerDisplay(startingAt: Duration.zero, running: true,),
   };
+  Map<String, TimerDisplayController> timerControllers = {};
+
 
   @override
   void initState() {
@@ -38,39 +40,45 @@ class _TimeViewState extends State<TimeView> {
       switch(opt.operation) {
         
         case TimerEventOperation.set:
-          timers[opt.id] = TimerDisplay(
-            key: timers[opt.id]?.key,
-            startingAt: opt.startingAt ?? timers[opt.id]?.startingAt ?? Duration.zero, 
-            running: timers[opt.id]?.running ?? false,
-            mode: opt.mode ?? timers[opt.id]?.mode ?? TimerDisplayMode.stopwatch
-          );          
+        if(timers[opt.id] == null) {
+            timerControllers[opt.id] = TimerDisplayController(startingAt: opt.startingAt ?? Duration.zero, mode: opt.mode!);
+            timers[opt.id] = TimerDisplay(
+              controller: timerControllers[opt.id]!,
+            );     
+          } else {
+            if(opt.startingAt!=null) timerControllers[opt.id]!.startingAt =opt.startingAt!;
+            if(opt.mode!=null) timerControllers[opt.id]!.mode =opt.mode!;
+          }
+               
           break;
         case TimerEventOperation.reset:
-          if(timers[opt.id] != null) {
-            timers[opt.id] = TimerDisplay(
-              key: timers[opt.id]?.key,
-              startingAt: timers[opt.id]?.startingAt ?? Duration.zero, 
-            );
-          }
+          // if(timers[opt.id] != null) {
+          //   timers[opt.id] = TimerDisplay(
+          //     key: timers[opt.id]?.key,
+          //     startingAt: timers[opt.id]?.startingAt ?? Duration.zero, 
+          //   );
+          // }
           
           break;
         case TimerEventOperation.start:
-          if(timers[opt.id] != null) {
-            timers[opt.id] = TimerDisplay(
-              key: timers[opt.id]!.key,
-              startingAt: timers[opt.id]!.startingAt, 
-              running: true,
-            );
-          }
+          timerControllers[opt.id]?.running = true;
+          // if(timers[opt.id] != null) {
+          //   timers[opt.id] = TimerDisplay(
+          //     key: timers[opt.id]!.key,
+          //     startingAt: timers[opt.id]!.startingAt, 
+          //     running: true,
+          //   );
+          // }
           break;
         case TimerEventOperation.stop:
-          if(timers[opt.id] != null) {
-            timers[opt.id] = TimerDisplay(
-              key: timers[opt.id]!.key,
-              startingAt: timers[opt.id]!.startingAt, 
-              running: false,
-            );
-          }
+          timerControllers[opt.id]?.running = false;
+          // if(timers[opt.id] != null) {
+          //   timers[opt.id] = TimerDisplay(
+          //     key: timers[opt.id]!.key,
+          //     startingAt: timers[opt.id]!.startingAt, 
+          //     running: false,
+          //   );
+          // }
           break;
         case TimerEventOperation.delete:
           timers.remove(opt.id);

@@ -9,14 +9,10 @@ enum TimerDisplayMode {
   stopwatch
 }
 
-// enum TimerDisplayState {
-//   stopped,
-//   running
-// }
 class TimerDisplayController {
   TimerDisplayController({
     required Duration startingAt,
-    bool running = true,
+    bool running = false,
     TimerDisplayMode mode = TimerDisplayMode.countdown
   }) {
       this._running = running;
@@ -46,6 +42,8 @@ class TimerDisplayController {
   });
   Duration get startingAt => _startingAt;
 
+  // reset
+
   //event listeners
   Set<Function> _listeners = {};
   addListener(Function listener) {
@@ -69,15 +67,11 @@ class TimerDisplay extends StatefulWidget {
   ///If [mode] is stopwatch then [startingAt] will be the starting time and it will count up from there. if [mode] is countdown then  it will start counting down from [startingAt]
   TimerDisplay({
     Key? key,
-    this.mode = TimerDisplayMode.stopwatch,
-    required this.startingAt,
-    this.running = true,
+    required this.controller,
     this.backgroundColor= Colors.grey,
   }) : super(key: key);
 
-  final TimerDisplayMode mode;
-  final Duration startingAt;
-  final bool running;
+  final TimerDisplayController controller;
   final Color backgroundColor;
 
   @override
@@ -85,31 +79,49 @@ class TimerDisplay extends StatefulWidget {
 }
 
 class _TimerDisplayState extends State<TimerDisplay> {
-  late Duration currentDuration;
+  Duration currentDuration = Duration.zero;
 
   late Timer _timer;
   DateTime? _startTime;
 
-  late bool isRunning = widget.running;
+  late bool isRunning = widget.controller.running;
+  late Duration startingAt = widget.controller.startingAt;
 
   @override
   void initState() {
+    widget.controller.addListener(controllerUpdated);
+    currentDuration = widget.controller.startingAt;
     start();
-    _timer = Timer.periodic(Duration(milliseconds: 8), (_) => handleTick());
+    _timer = Timer.periodic(const Duration(milliseconds: 8), (_) => handleTick());
     super.initState();
+  }
+  
+
+  controllerUpdated() {
+    print(widget.controller.mode);
+    if(startingAt != widget.controller.startingAt) {
+      print("diff");
+      currentDuration = widget.controller.startingAt;
+      startingAt = widget.controller.startingAt;
+    }
+    setState(() {
+      
+    });
   }
 
   void handleTick() {
-    if (widget.running) {
+    // print("hey");
+    if (widget.controller.running) {
       setState(() {
-        if (widget.mode == TimerDisplayMode.stopwatch) {
+        if (widget.controller.mode == TimerDisplayMode.stopwatch) {
           currentDuration = DateTime.now().difference(_startTime!);
         } else {
           currentDuration =
-              widget.startingAt - DateTime.now().difference(_startTime!);
+              widget.controller.startingAt - DateTime.now().difference(_startTime!);
           if (currentDuration.isNegative) {
             currentDuration = Duration.zero;
             _timer.cancel();
+            widget.controller.running= false;
 
             // _startTime = DateTime.now();
             // currentDuration = Duration.zero;
@@ -121,34 +133,29 @@ class _TimerDisplayState extends State<TimerDisplay> {
   }
 
   start() {
-    currentDuration = widget.startingAt;
-    if (widget.mode == TimerDisplayMode.stopwatch) {
-      _startTime = DateTime.now().subtract(widget.startingAt);
+    
+    if (widget.controller.mode == TimerDisplayMode.stopwatch) {
+      _startTime = DateTime.now().subtract(widget.controller.startingAt);
     } else {
       _startTime = DateTime.now();
     }
   }
 
-  // void toggleRunning() {
-  //   setState(() {
-  //     widget.running = !widget.running;
-  //   });
-  // }
-
   @override
   void dispose() {
     _timer.cancel();
+    widget.controller.removeListener(controllerUpdated);
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
 
-    if(isRunning == false && widget.running == true) {
-      isRunning = widget.running;
+    if(isRunning == false && widget.controller.running == true) {
+      isRunning = widget.controller.running;
       start();
     } else {
-      isRunning = widget.running;
+      isRunning = widget.controller.running;
     }
     return Stack(
       children: [
