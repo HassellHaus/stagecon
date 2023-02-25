@@ -44,6 +44,8 @@ class TimerDisplayController {
 
   // reset
 
+
+
   //event listeners
   Set<Function> _listeners = {};
   addListener(Function listener) {
@@ -103,7 +105,14 @@ class _TimerDisplayState extends State<TimerDisplay> {
       print("diff");
       currentDuration = widget.controller.startingAt;
       startingAt = widget.controller.startingAt;
+      start();
     }
+    // if(isRunning != widget.controller.running) {
+    //   if(widget.controller.running = false) {
+    //     //we are pauseing
+    //     startingAt = currentDuration;
+    //   }
+    // }
     setState(() {
       
     });
@@ -159,7 +168,7 @@ class _TimerDisplayState extends State<TimerDisplay> {
     }
     return Stack(
       children: [
-        // if(widget.mode == TimerDisplayMode.countdown )Positioned.fill(left: 0, child: FractionallySizedBox(widthFactor: , child: Container(color: widget.backgroundColor))),
+        if(widget.controller.mode == TimerDisplayMode.countdown )Positioned.fill(left: 0, child: FractionallySizedBox(widthFactor: 1 -(currentDuration.inMilliseconds/widget.controller.startingAt.inMilliseconds), child: Container(color: widget.backgroundColor))),
         Positioned(child: TimeDisplay(duration: currentDuration, mode: TimeDisplayMode.h24,))
       ],
 
