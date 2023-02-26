@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
 
       },
       themeMode: ThemeMode.dark,
-      title: 'Stagecon',
+      title: 'StageCon',
       theme: ThemeData(
         // This is the theme of your application.
         //

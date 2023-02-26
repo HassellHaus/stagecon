@@ -37,6 +37,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   osc: ^1.0.0
   get: ^4.6.5
+  network_info_plus: ^3.0.2
   
 
 dev_dependencies:

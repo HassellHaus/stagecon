@@ -1,6 +1,9 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stagecon/controllers/OscController.dart';
+import 'package:stagecon/views/OptionsView.dart';
 import 'package:stagecon/widgets/TimerDisplay.dart';
 
 class TimeView extends StatefulWidget {
@@ -90,21 +93,33 @@ class _TimeViewState extends State<TimeView> {
     });
   }
 
+  bool showTutorial = true;
+
   @override
   Widget build(BuildContext context) {
-    int maxCrossCount =
-        (MediaQuery.of(context).size.width / widget.minSize).floor();
+    int maxCrossCount = 2;
+        //max((MediaQuery.of(context).size.width / widget.minSize).floor(),1);
+        // print(maxCrossCount);
     int crossCount = 1;
     if (timers.length > 1) {
       crossCount =
           timers.length >= maxCrossCount ? maxCrossCount : timers.length;
     }
+    // crossCount = min(timers.length, maxCrossCount);
+
+    if(timers.length >0 ) {
+      showTutorial = false;
+    }
 
     // timers["test"] = TimerDisplay(key: timers["test"]!.key, startingAt: Duration.zero,running: true);
 
-    return DefaultTextStyle(
+    return GestureDetector(
+      onDoubleTap: () => Get.to(()=> const OptionsView(), fullscreenDialog:true),
+      child: DefaultTextStyle(
         style: const TextStyle(color: Colors.white, fontSize: 3000),
-        child: GridView.count(
+        child: showTutorial
+        ?   const Center(child: Text("Listening on port 4455. Double tap for options", style: TextStyle(color: Colors.grey, fontSize: 15),),)
+        :GridView.count(
             shrinkWrap: true,
             crossAxisCount: crossCount,
             childAspectRatio: 2,
@@ -130,6 +145,9 @@ class _TimeViewState extends State<TimeView> {
                                           fontSize: 3000),
                                       child: e.value))
                             ]))))
-                .toList()));
+                .toList()))
+                
+                
+    );
   }
 }
