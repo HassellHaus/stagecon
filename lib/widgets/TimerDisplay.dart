@@ -23,43 +23,53 @@ class TimerDisplayController {
   
   late bool _running;
   ///sets if the timer is running or paused 
-  set running(bool v) => _update((){
+  set running(bool v) => _update("running", (){
     _running = v;
   });
   bool get running => _running;
 
   late TimerDisplayMode _mode;
   ///Sets the timer mode 
-  set mode(TimerDisplayMode v) => _update(() {
+  set mode(TimerDisplayMode v) => _update("mode",() {
     _mode  = v;
   });
   TimerDisplayMode get mode => _mode;
 
   late Duration _startingAt;
   ///Sets the starting time for the timer clock
-  set startingAt(Duration v) => _update((){
+  set startingAt(Duration v) => _update("startingAt",(){
     _startingAt = v;
   });
   Duration get startingAt => _startingAt;
 
   // reset
 
+  reset() {
+    if(running) {
+      running = false;
+      _update("startingAt",(){});
+      running = true;
+    } else {
+      _update("startingAt",(){});
+    }
+    
+  }
 
 
   //event listeners
-  Set<Function> _listeners = {};
-  addListener(Function listener) {
+  Set<Function(String changed)> _listeners = {};
+  addListener(Function(String changed) listener) {
     _listeners.add(listener);
   }
-  removeListener(Function listener) {
+  removeListener(Function(String changed) listener) {
     _listeners.remove(listener);
   }
 
   /// called when anything changes within this function
-  _update(Function cb) {
+  _update(String changed, Function cb) {
     cb();
     //call each event listener
-    _listeners.forEach((element) => element());
+    _listeners.forEach((element) => element(changed));
   }
 
 }
@@ -70,11 +80,11 @@ class TimerDisplay extends StatefulWidget {
   TimerDisplay({
     Key? key,
     required this.controller,
-    this.backgroundColor= Colors.grey,
+    this.countdownColor= Colors.grey,
   }) : super(key: key);
 
   final TimerDisplayController controller;
-  final Color backgroundColor;
+  final Color countdownColor;
 
   @override
   State<TimerDisplay> createState() => _TimerDisplayState();
@@ -84,28 +94,53 @@ class _TimerDisplayState extends State<TimerDisplay> {
   Duration currentDuration = Duration.zero;
 
   late Timer _timer;
+  late Timer _flashTimer;
   DateTime? _startTime;
 
-  late bool isRunning = widget.controller.running;
+  late Color countdownColor = widget.countdownColor;
+
+  // late bool isRunning = widget.controller.running;
   late Duration startingAt = widget.controller.startingAt;
 
   @override
   void initState() {
+    _timer = Timer.periodic(const Duration(milliseconds: 8), (_) => handleTick());
+    _timer.cancel();
+    _flashTimer = Timer.periodic(const Duration(seconds: 1), (_) => handleDoneFlash());
+    _flashTimer.cancel();
+    
     widget.controller.addListener(controllerUpdated);
     currentDuration = widget.controller.startingAt;
-    start();
-    _timer = Timer.periodic(const Duration(milliseconds: 8), (_) => handleTick());
+    if(widget.controller.running) {
+      start();
+
+    }
+    
     super.initState();
   }
   
 
-  controllerUpdated() {
-    print(widget.controller.mode);
-    if(startingAt != widget.controller.startingAt) {
+  controllerUpdated(String changed) {
+    // print(widget.controller.mode);
+    if(changed  == "startingAt") {
       print("diff");
       currentDuration = widget.controller.startingAt;
       startingAt = widget.controller.startingAt;
-      start();
+      // start();
+    }
+
+    if(changed == "running") {
+      // isRunning = widget.controller.running;
+      if(!widget.controller.running) {
+        //we need to pause
+        _timer.cancel();
+        _flashTimer.cancel();
+        startingAt = currentDuration;
+        
+      } else {
+        //we need to play
+        start(); 
+      }
     }
     // if(isRunning != widget.controller.running) {
     //   if(widget.controller.running = false) {
@@ -113,40 +148,62 @@ class _TimerDisplayState extends State<TimerDisplay> {
     //     startingAt = currentDuration;
     //   }
     // }
-    setState(() {
+    if(mounted) {
+      setState(() {
       
     });
+    }
   }
 
   void handleTick() {
     // print("hey");
     if (widget.controller.running) {
-      setState(() {
+      if(mounted) {
+        setState(() {
         if (widget.controller.mode == TimerDisplayMode.stopwatch) {
           currentDuration = DateTime.now().difference(_startTime!);
         } else {
           currentDuration =
-              widget.controller.startingAt - DateTime.now().difference(_startTime!);
+              startingAt - DateTime.now().difference(_startTime!);
           if (currentDuration.isNegative) {
             currentDuration = Duration.zero;
             _timer.cancel();
-            widget.controller.running= false;
-
+            widget.controller._running= false;
+            countdownDoneFlash();
             // _startTime = DateTime.now();
             // currentDuration = Duration.zero;
             
           }
         }
       });
+      }
     }
   }
 
   start() {
-    
+    // _startTime = DateTime.now().subtract(startingAt);
     if (widget.controller.mode == TimerDisplayMode.stopwatch) {
-      _startTime = DateTime.now().subtract(widget.controller.startingAt);
+      _startTime = DateTime.now().subtract(startingAt);
     } else {
       _startTime = DateTime.now();
+    }
+    countdownColor = widget.countdownColor;
+    _timer.cancel();
+    _flashTimer.cancel();
+    _timer = Timer.periodic(const Duration(milliseconds: 8), (_) => handleTick());
+  }
+
+  //flashes the countdown clock when it reaches 0;
+  countdownDoneFlash() {
+    _flashTimer.cancel();
+    _flashTimer = Timer.periodic(const Duration(seconds: 1), (_) => handleDoneFlash());
+  }
+
+  handleDoneFlash() {
+    if(mounted) {
+      setState(() {
+      countdownColor = countdownColor==widget.countdownColor?Colors.transparent:widget.countdownColor;
+    });
     }
   }
 
@@ -160,15 +217,9 @@ class _TimerDisplayState extends State<TimerDisplay> {
   @override
   Widget build(BuildContext context) {
 
-    if(isRunning == false && widget.controller.running == true) {
-      isRunning = widget.controller.running;
-      start();
-    } else {
-      isRunning = widget.controller.running;
-    }
     return Stack(
       children: [
-        if(widget.controller.mode == TimerDisplayMode.countdown )Positioned.fill(left: 0, child: FractionallySizedBox(widthFactor: 1 -(currentDuration.inMilliseconds/widget.controller.startingAt.inMilliseconds), child: Container(color: widget.backgroundColor))),
+        if(widget.controller.mode == TimerDisplayMode.countdown )Positioned.fill(left: 0, child: FractionallySizedBox(widthFactor: 1 -(currentDuration.inMilliseconds/widget.controller.startingAt.inMilliseconds), child: Container(color: countdownColor))),
         Positioned(child: TimeDisplay(duration: currentDuration, mode: TimeDisplayMode.h24,))
       ],
 

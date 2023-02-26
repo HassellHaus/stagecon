@@ -58,7 +58,7 @@ class _TimeViewState extends State<TimeView> {
           //     startingAt: timers[opt.id]?.startingAt ?? Duration.zero, 
           //   );
           // }
-          
+          timerControllers[opt.id]?.reset();
           break;
         case TimerEventOperation.start:
           timerControllers[opt.id]?.running = true;
@@ -113,7 +113,7 @@ class _TimeViewState extends State<TimeView> {
                 .map((e) => AnimatedContainer(
                     padding: EdgeInsets.all(15),
                     decoration: BoxDecoration(
-                        border: Border.all(width: 3, color: e.value.backgroundColor)),
+                        border: Border.all(width: 3, color: e.value.countdownColor)),
                     duration: const Duration(milliseconds: 500),
                     child: FittedBox(
                         fit: BoxFit.scaleDown,

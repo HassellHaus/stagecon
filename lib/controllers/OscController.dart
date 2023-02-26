@@ -36,11 +36,11 @@ class OSCcontroler extends GetxController{
 
     // try
     socket.listen((msg) {
-      print("Recieved ${msg.address}");
-      msg.arguments.forEach((element) {
-        print(element);
-        print(element.runtimeType);
-      });
+      // print("Recieved ${msg.address}");
+      // msg.arguments.forEach((element) {
+      //   print(element);
+      //   print(element.runtimeType);
+      // });
       bool stopwatchCommand = msg.address.startsWith("/stagecon/stopwatch/");
       bool countdownCommand = msg.address.startsWith("/stagecon/countdown/");
       bool messageCommand = msg.address.startsWith("/stagecon/message/");
