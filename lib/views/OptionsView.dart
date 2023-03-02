@@ -1,16 +1,18 @@
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:get/get.dart';
 import 'package:network_info_plus/network_info_plus.dart';
+import 'package:stagecon/views/OSCLogView.dart';
 
-class OptionsView extends StatefulWidget {
-  const OptionsView({super.key});
+class ConfigurationView extends StatefulWidget {
+  const ConfigurationView({super.key});
 
   @override
-  State<OptionsView> createState() => _OptionsViewState();
+  State<ConfigurationView> createState() => _ConfigurationViewState();
 }
 
-class _OptionsViewState extends State<OptionsView> {
+class _ConfigurationViewState extends State<ConfigurationView> {
   final info = NetworkInfo();
 
   late var deviceIP = NetworkInterface.list();
@@ -29,13 +31,13 @@ class _OptionsViewState extends State<OptionsView> {
     printIps();
     return CupertinoPageScaffold(
       backgroundColor: CupertinoColors.systemGroupedBackground.resolveFrom(context),
-      navigationBar: CupertinoNavigationBar(previousPageTitle: "Back", middle: Text("Options")),
+      navigationBar: const CupertinoNavigationBar(previousPageTitle: "Back", middle: Text("Configuration")),
       child: SingleChildScrollView(
         
         child: Column(
           children: [
             SizedBox(height: 50 + MediaQuery.of(context).padding.top),
-
+            
             CupertinoListSection.insetGrouped(
               header: const Text("OSC Examples"),
               footer:  Text("You need an osc compatible program to send these.  This app was built with the intent to use it with QLab", style: TextStyle(fontSize: 12, color: CupertinoColors.secondaryLabel.resolveFrom(context) ),),
@@ -63,7 +65,7 @@ class _OptionsViewState extends State<OptionsView> {
                   if(snapshot.hasError) {
 
                     print(snapshot.error);
-                    return CupertinoListTile.notched(title: Text("Device IP"), subtitle: const Text("Error getting addresses "));
+                    return const CupertinoListTile.notched(title: Text("Device IP"), subtitle: Text("Error getting addresses "));
                   }
                   
                   if(snapshot.hasData) {
@@ -71,7 +73,7 @@ class _OptionsViewState extends State<OptionsView> {
                     for(var interface in snapshot.data!) {
                       for(var addr in interface.addresses) {
                         
-                        deviceIps.add(CupertinoListTile.notched(title: Text("Device IP"), subtitle: FittedBox( fit: BoxFit.scaleDown, child: Text(addr.address)), additionalInfo: Text(interface.name),));
+                        deviceIps.add(CupertinoListTile.notched(title: const Text("Device IP"), subtitle: FittedBox( fit: BoxFit.scaleDown, child: Text(addr.address)), additionalInfo: Text(interface.name),));
                       }
                     }
                     return Column(
@@ -79,12 +81,19 @@ class _OptionsViewState extends State<OptionsView> {
                       children: deviceIps,
                     );
                   } else {
-                    return const CupertinoListTile.notched(title: Text("Device IP"), subtitle: const Text("Finding IP"));
+                    return const CupertinoListTile.notched(title: Text("Device IP"), subtitle: Text("Finding IP"));
                   }
                 }),
                 
 
                 
+              ],
+            ),
+            //MARK: Debug
+            CupertinoListSection.insetGrouped(
+              header: const Text("Tools"),
+              children: [
+                CupertinoListTile.notched(title: const  Text("OSC Log"), onTap: () => Get.to(()=> const OSCLogView()), trailing: const CupertinoListTileChevron(),),
               ],
             )
           ], 

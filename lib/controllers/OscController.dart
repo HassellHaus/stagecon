@@ -6,6 +6,7 @@ import 'package:stagecon/widgets/TimerDisplay.dart';
 import '../widgets/MessageOverlay.dart';
 
 typedef TimerEventCallback = Function(TimerEventOptions);
+typedef OSCLogEventCallback = Function(OSCMessage);
 
 enum TimerEventOperation {
   set,
@@ -38,6 +39,7 @@ class OSCcontroler extends GetxController{
 
     // try
     socket.listen((msg) {
+      callLogEventListener(msg);
       // print("Recieved ${msg.address}");
       // msg.arguments.forEach((element) {
       //   print(element);
@@ -127,6 +129,18 @@ class OSCcontroler extends GetxController{
     // print("HI");
     timerListeners.forEach((element) {element(options);});
   }
+
+  Set<OSCLogEventCallback> logListeners = {};
+  addLogEventListener(OSCLogEventCallback func) {
+    logListeners.add(func);
+  }
+  removeLogEventListener(OSCLogEventCallback func) {
+    logListeners.remove(func);
+  }
+  callLogEventListener(OSCMessage message) {
+    logListeners.forEach((element) {element(message);});
+  }
+
 
 
   void dispose() {
