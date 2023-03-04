@@ -37,15 +37,16 @@ class _TimeViewState extends State<TimeView> {
   }
 
   handleOSCEvents(TimerEventOptions opt) {
-    print(opt.operation);
-    return;
-    setState(() {
+    print(opt.id);
+    // return;
+    
       switch(opt.operation) {
         
         case TimerEventOperation.set:
         if(timers[opt.id] == null) {
             timerControllers[opt.id] = TimerDisplayController(startingAt: opt.startingAt ?? Duration.zero, mode: opt.mode!);
             timers[opt.id] = TimerDisplay(
+              key: ValueKey("TimeView-TimerDisplay-${opt.id}"),
               controller: timerControllers[opt.id]!,
             );     
           } else {
@@ -85,19 +86,24 @@ class _TimeViewState extends State<TimeView> {
           break;
         case TimerEventOperation.delete:
           timers.remove(opt.id);
+          timerControllers.remove(opt.id);
           break;
         case TimerEventOperation.format:
           // TODO: Handle this case.
           break;
       }
-      
+    
+    if(mounted) setState(() {
+      // print("set");
     });
+    // print("post");
   }
 
   bool showTutorial = true;
 
   @override
   Widget build(BuildContext context) {
+    // print(timerControllers[0]?.startingAt);
     int maxCrossCount = 2;
         //max((MediaQuery.of(context).size.width / widget.minSize).floor(),1);
         // print(maxCrossCount);

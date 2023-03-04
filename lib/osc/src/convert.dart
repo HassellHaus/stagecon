@@ -290,10 +290,6 @@ class OSCMessageEncoder extends DataEncoder<OSCMessage> {
 class OSCMessageParser {
   int index = 0;
 
-  List<int> get remain {
-    return input.skip(index).toList();
-  }
-
   final List<int> input;
   OSCMessageParser(this.input);
 
@@ -319,7 +315,6 @@ class OSCMessageParser {
   OSCMessage parse() {
     final addressBytes = takeUntil(byte: 0);
     final address = asString(addressBytes);
-    int current = input[index];
 
     eat(byte: 0);
     align();
@@ -332,16 +327,19 @@ class OSCMessageParser {
       align();
       final codecs =
           typeTagBytes.map((b) => DataCodec.forType(asString(<int>[b])));
+
       int count = 0;
       for (var codec in codecs) {
         final value = codec.decode(input.sublist(index));
         args.add(value);
 
         index += codec.length(value);
+        ///This line was previously removed in an earlier commit but was proposed to be re-added to fix the multiple of 4 error. Because it was previously removed (and there is no documentation as to why) a new solution was devised below. (Thank you Connor! @M0nster5)
+        // if (value is String) eat(byte: 0);
+        
 
-        // At this point the index is a multiple of 4. This causes the align function to return 0
-        // This mean when we start at the next codec we are really at the space causing a time to get left out
-
+        /// At this point the index is a multiple of 4. This causes the align function to return 0
+        /// This mean when we start at the next codec we are really at the space causing the remaining arguments to get left out
         if (count == 0 &&
             index % 4 == 0 &&
             index < input.length - 1 &&

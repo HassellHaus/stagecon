@@ -69,7 +69,7 @@ class OSCcontroler extends GetxController{
               int h = argLen >4?(msg.arguments[4] as int? ?? 0):0;
               int d = argLen >5?(msg.arguments[5] as int? ?? 0):0;
               final duration = Duration(days: d, hours: h, minutes: m, seconds: s, milliseconds: ms);
-              print(duration);
+              // print(duration);
 
               callTimerEventListeners(TimerEventOptions(id: id, operation: TimerEventOperation.set, startingAt: duration, mode: mode));
             } else if (msg.address.contains("/start",19)) {

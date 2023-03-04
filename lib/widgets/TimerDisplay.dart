@@ -67,6 +67,7 @@ class TimerDisplayController {
   /// called when anything changes within this function
   _update(String changed, Function cb) {
     cb();
+    // print(_listeners);
     //call each event listener
     _listeners.forEach((element) => element(changed));
   }
@@ -195,7 +196,7 @@ class _TimerDisplayState extends State<TimerDisplay> {
   //flashes the countdown clock when it reaches 0;
   countdownDoneFlash() {
     _flashTimer.cancel();
-    _flashTimer = Timer.periodic(const Duration(seconds: 1), (_) => handleDoneFlash());
+    _flashTimer = Timer.periodic(const Duration(milliseconds: 500), (_) => handleDoneFlash());
   }
 
   handleDoneFlash() {
