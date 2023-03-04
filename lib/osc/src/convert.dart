@@ -293,7 +293,7 @@ class OSCMessageParser {
   List<int> get remain {
     return input.skip(index).toList();
   }
-  
+
   final List<int> input;
   OSCMessageParser(this.input);
 
@@ -330,21 +330,24 @@ class OSCMessageParser {
     if (typeTagBytes.isNotEmpty) {
       eat(byte: 0);
       align();
-      current =  input[index];
       final codecs =
           typeTagBytes.map((b) => DataCodec.forType(asString(<int>[b])));
+      int count = 0;
       for (var codec in codecs) {
         final value = codec.decode(input.sublist(index));
         args.add(value);
 
         index += codec.length(value);
-        current = input[index];
 
         // At this point the index is a multiple of 4. This causes the align function to return 0
         // This mean when we start at the next codec we are really at the space causing a time to get left out
 
-        // if (current == 0) eat(byte: 0);
+        if (count == 0 &&
+            index % 4 == 0 &&
+            index < input.length - 1 &&
+            input[index] == 0) eat(byte: 0);
         align();
+        count++;
       }
     }
 
