@@ -93,9 +93,7 @@ class _TimeViewState extends State<TimeView> {
           break;
       }
     
-    if(mounted) setState(() {
-      // print("set");
-    });
+    if(mounted) setState(() {});
     // print("post");
   }
 
