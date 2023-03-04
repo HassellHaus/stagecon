@@ -330,7 +330,6 @@ class OSCMessageParser {
     if (typeTagBytes.isNotEmpty) {
       eat(byte: 0);
       align();
-      current = input[index];
       final codecs =
           typeTagBytes.map((b) => DataCodec.forType(asString(<int>[b])));
       int count = 0;
