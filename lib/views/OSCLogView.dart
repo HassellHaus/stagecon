@@ -1,7 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
-import 'package:osc/osc.dart';
+
 import 'package:stagecon/controllers/OscController.dart';
+import 'package:stagecon/osc/osc.dart';
 
 class OSCLogView extends StatefulWidget {
   const OSCLogView({super.key});

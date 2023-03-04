@@ -38,6 +38,7 @@ class _TimeViewState extends State<TimeView> {
 
   handleOSCEvents(TimerEventOptions opt) {
     print(opt.operation);
+    return;
     setState(() {
       switch(opt.operation) {
         

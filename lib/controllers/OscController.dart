@@ -1,6 +1,7 @@
 
 import 'package:get/get.dart';
-import 'package:osc/osc.dart';
+import 'package:stagecon/osc/osc.dart';
+
 import 'package:stagecon/widgets/TimerDisplay.dart';
 
 import '../widgets/MessageOverlay.dart';
