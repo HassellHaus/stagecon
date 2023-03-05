@@ -14,21 +14,22 @@ class ConfigurationView extends StatefulWidget {
 
 class _ConfigurationViewState extends State<ConfigurationView> {
   final info = NetworkInfo();
+  
 
   late var deviceIP = NetworkInterface.list();
-  Future printIps() async {
-    for (var interface in await NetworkInterface.list()) {
-      print('== Interface: ${interface.name} ==');
-      for (var addr in interface.addresses) {
-        print(
-            '${addr.address} ${addr.host} ${addr.isLoopback} ${addr.rawAddress} ${addr.type.name}');
-      }
-    }
-  }
+  // Future printIps() async {
+  //   for (var interface in await NetworkInterface.list()) {
+  //     print('== Interface: ${interface.name} ==');
+  //     for (var addr in interface.addresses) {
+  //       print(
+  //           '${addr.address} ${addr.host} ${addr.isLoopback} ${addr.rawAddress} ${addr.type.name}');
+  //     }
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
-    printIps();
+    // printIps();
     return CupertinoPageScaffold(
       backgroundColor: CupertinoColors.systemGroupedBackground.resolveFrom(context),
       navigationBar: const CupertinoNavigationBar(previousPageTitle: "Back", middle: Text("Configuration")),
@@ -40,7 +41,7 @@ class _ConfigurationViewState extends State<ConfigurationView> {
             
             CupertinoListSection.insetGrouped(
               header: const Text("OSC Examples"),
-              footer:  Text("You need an osc compatible program to send these.  This app was built with the intent to use it with QLab", style: TextStyle(fontSize: 12, color: CupertinoColors.secondaryLabel.resolveFrom(context) ),),
+              footer:  Text("You need an osc compatible program to send these.  This app was built with with QLab in mind.", style: TextStyle(fontSize: 12, color: CupertinoColors.secondaryLabel.resolveFrom(context) ),),
               children: const [
                 CupertinoListTile.notched(title:  Text("Create/Edit a timer"), subtitle: FittedBox( fit: BoxFit.scaleDown, child:  Text("/stagecon/[countdown|stopwatch]/set “Timer Name” ms s m h d ", style: TextStyle(fontSize: 20),),)),
                 CupertinoListTile.notched(title:  Text("Reset a timer"), subtitle: FittedBox( fit: BoxFit.scaleDown, child:  Text("/stagecon/[countdown|stopwatch]/reset “Timer Name”", style: TextStyle(fontSize: 20),),)),

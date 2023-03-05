@@ -24,6 +24,7 @@ class TimerEventOptions {
   final Duration? startingAt;
   final bool? running;
   final TimerEventOperation operation;
+  // final Color? countdownColor
   const TimerEventOptions({
     required this.id,
     required this.operation,

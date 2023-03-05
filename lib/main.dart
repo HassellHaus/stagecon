@@ -1,10 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:stagecon/controllers/OscController.dart';
 import 'package:stagecon/views/TimeView.dart';
 import 'package:stagecon/widgets/TimeDisplay.dart';
 
-void main() {
+void main() async  {
+
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Hive.initFlutter();
+  var preferences = await Hive.openBox('preferences');
+  //set defaults
+  if(!preferences.containsKey("osc_port")) {
+    preferences.put("osc_port", 4455);
+  }
+  if(!preferences.containsKey("less_ms_precision")) {
+    preferences.put("less_ms_precision", false);
+  }
+  if(!preferences.containsKey("countdown_flash_rate")) {
+    preferences.put("countdown_flash_rate", 500);
+  }
+  if(!preferences.containsKey("telemetry")) {
+    preferences.put("telemetry", true);
+  }
+
   var oscCon = Get.put(OSCcontroler());
   runApp(const MyApp());
 }

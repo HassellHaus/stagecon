@@ -1,7 +1,7 @@
 # Stagecon
 ### A cross platform OSC Timer and messenger display.  Created for theatres.
 ![Stagecon Icon](assets/icon/leg_android.png)
-
+[![Codemagic build status](https://api.codemagic.io/apps/63fb9705a79ffb67f89c12e5/63fb9705a79ffb67f89c12e4/status_badge.svg)](https://codemagic.io/apps/63fb9705a79ffb67f89c12e5/63fb9705a79ffb67f89c12e4/latest_build)
 
 ## Downloads
 ### Direct (free)

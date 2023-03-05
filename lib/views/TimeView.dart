@@ -48,7 +48,8 @@ class _TimeViewState extends State<TimeView> {
             timers[opt.id] = TimerDisplay(
               key: ValueKey("TimeView-TimerDisplay-${opt.id}"),
               controller: timerControllers[opt.id]!,
-            );     
+            );    
+            if(mounted) setState(() {}); 
           } else {
             if(opt.startingAt!=null) timerControllers[opt.id]!.startingAt =opt.startingAt!;
             if(opt.mode!=null) timerControllers[opt.id]!.mode =opt.mode!;
@@ -56,67 +57,58 @@ class _TimeViewState extends State<TimeView> {
                
           break;
         case TimerEventOperation.reset:
-          // if(timers[opt.id] != null) {
-          //   timers[opt.id] = TimerDisplay(
-          //     key: timers[opt.id]?.key,
-          //     startingAt: timers[opt.id]?.startingAt ?? Duration.zero, 
-          //   );
-          // }
+
           timerControllers[opt.id]?.reset();
           break;
         case TimerEventOperation.start:
           timerControllers[opt.id]?.running = true;
-          // if(timers[opt.id] != null) {
-          //   timers[opt.id] = TimerDisplay(
-          //     key: timers[opt.id]!.key,
-          //     startingAt: timers[opt.id]!.startingAt, 
-          //     running: true,
-          //   );
-          // }
+
           break;
         case TimerEventOperation.stop:
           timerControllers[opt.id]?.running = false;
-          // if(timers[opt.id] != null) {
-          //   timers[opt.id] = TimerDisplay(
-          //     key: timers[opt.id]!.key,
-          //     startingAt: timers[opt.id]!.startingAt, 
-          //     running: false,
-          //   );
-          // }
+
           break;
         case TimerEventOperation.delete:
           timers.remove(opt.id);
           timerControllers.remove(opt.id);
+          if(mounted) setState(() {});
           break;
         case TimerEventOperation.format:
           // TODO: Handle this case.
           break;
       }
     
-    if(mounted) setState(() {});
+    
     // print("post");
   }
 
   bool showTutorial = true;
 
+
+  ///Clamps the cross count to a square power
+  calculateCrossCount(int n) {
+    return sqrt(n).ceil();
+  }
+
   @override
   Widget build(BuildContext context) {
-    // print(timerControllers[0]?.startingAt);
-    int maxCrossCount = 2;
-        //max((MediaQuery.of(context).size.width / widget.minSize).floor(),1);
-        // print(maxCrossCount);
-    int crossCount = 1;
-    if (timers.length > 1) {
-      crossCount =
-          timers.length >= maxCrossCount ? maxCrossCount : timers.length;
-    }
-    // crossCount = min(timers.length, maxCrossCount);
+    //todo: optimize the building of the clock items.  Maybe separate them from the main build method?
+    //calculate the optimal cross count
+    int crossCount = calculateCrossCount(timers.length);
+    double aspect =  MediaQuery.of(context).size.width / MediaQuery.of(context).size.height;;
 
-    if(timers.length >0 ) {
+    // bool isPortrait = MediaQuery.of(context).size.width < MediaQuery.of(context).size.height;
+    // print(isPortrait);
+    //   if(isPortrait) {
+    //     aspect =  MediaQuery.of(context).size. width/ MediaQuery.of(context).size. height;
+    //   } else {
+        
+    // }
+
+    if(timers.isNotEmpty ) {
       showTutorial = false;
     }
 
-    // timers["test"] = TimerDisplay(key: timers["test"]!.key, startingAt: Duration.zero,running: true);
 
     return GestureDetector(
       onDoubleTap: () => Get.to(()=> const ConfigurationView(), fullscreenDialog:true),
@@ -127,12 +119,12 @@ class _TimeViewState extends State<TimeView> {
         :GridView.count(
             shrinkWrap: true,
             crossAxisCount: crossCount,
-            childAspectRatio: 2,
+            childAspectRatio: aspect,
             children: timers.entries
                 .map((e) => AnimatedContainer(
-                    padding: EdgeInsets.all(15),
+                    padding: const EdgeInsets.all(15),
                     decoration: BoxDecoration(
-                        border: Border.all(width: 3, color: e.value.countdownColor)),
+                        border: Border.all(width: 3, color: e.value.controller.countdownColor)),
                     duration: const Duration(milliseconds: 500),
                     child: FittedBox(
                         fit: BoxFit.scaleDown,

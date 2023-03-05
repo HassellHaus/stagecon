@@ -12,14 +12,21 @@ class TimerDisplayController {
   TimerDisplayController({
     required Duration startingAt,
     bool running = false,
-    TimerDisplayMode mode = TimerDisplayMode.countdown
+    TimerDisplayMode mode = TimerDisplayMode.countdown,
+    Color countdownColor = Colors.grey 
   }) {
       this._running = running;
       this._mode = mode;
       this._startingAt = startingAt;
+      this._countdownColor = countdownColor;
   }
 
-  
+  late Color _countdownColor;
+  set countdownColor(Color v) => _update("countdownColor", () {
+    _countdownColor = v;
+  });
+  Color get countdownColor => _countdownColor;
+
   late bool _running;
   ///sets if the timer is running or paused 
   set running(bool v) => _update("running", (){
@@ -80,11 +87,11 @@ class TimerDisplay extends StatefulWidget {
   TimerDisplay({
     Key? key,
     required this.controller,
-    this.countdownColor= Colors.grey,
+    // this.countdownColor= Colors.grey,
   }) : super(key: key);
 
   final TimerDisplayController controller;
-  final Color countdownColor;
+  // final Color countdownColor;
 
   @override
   State<TimerDisplay> createState() => _TimerDisplayState();
@@ -97,7 +104,7 @@ class _TimerDisplayState extends State<TimerDisplay> {
   late Timer _flashTimer;
   DateTime? _startTime;
 
-  late Color countdownColor = widget.countdownColor;
+  late Color countdownColor = widget.controller.countdownColor;
 
   // late bool isRunning = widget.controller.running;
   late Duration startingAt = widget.controller.startingAt;
@@ -187,7 +194,7 @@ class _TimerDisplayState extends State<TimerDisplay> {
     } else {
       _startTime = DateTime.now();
     }
-    countdownColor = widget.countdownColor;
+    
     _timer.cancel();
     _flashTimer.cancel();
     _timer = Timer.periodic(const Duration(milliseconds: 8), (_) => handleTick());
@@ -202,7 +209,7 @@ class _TimerDisplayState extends State<TimerDisplay> {
   handleDoneFlash() {
     if(mounted) {
       setState(() {
-      countdownColor = countdownColor==widget.countdownColor?Colors.transparent:widget.countdownColor;
+      countdownColor = countdownColor==widget.controller.countdownColor?Colors.transparent:widget.controller.countdownColor;
     });
     }
   }

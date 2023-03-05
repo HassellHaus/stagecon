@@ -39,7 +39,7 @@ class _OSCLogViewState extends State<OSCLogView> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       backgroundColor: CupertinoColors.systemGroupedBackground.resolveFrom(context),
-      navigationBar: CupertinoNavigationBar(previousPageTitle: "Back", middle: Text("OSC Log")),
+      navigationBar: const CupertinoNavigationBar(previousPageTitle: "Back", middle: Text("OSC Log")),
       child: DefaultTextStyle(style: CupertinoTheme.of(context).textTheme.textStyle,
         child: ListView.separated(
           separatorBuilder: (context, index) => Container(height: 1, color: CupertinoColors.systemGrey.resolveFrom(context)),
@@ -61,19 +61,19 @@ class _LogItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(children: [
       //time
-      Text(message.received.toString(), style: TextStyle(fontSize: 8, fontFamily: "RobotoMono",),),
+      Text(message.received.toString(), style: const TextStyle(fontSize: 8, fontFamily: "RobotoMono",),),
       const Text("|"),
       //message
       Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(message.message.address, style: TextStyle(fontSize: 15, fontFamily: "RobotoMono")),
+          Text(message.message.address, style: const TextStyle(fontSize: 15, fontFamily: "RobotoMono")),
           FittedBox(
             fit: BoxFit.scaleDown,
             child: Row(
             mainAxisSize: MainAxisSize.min,
-            children: message.message.arguments.map((e) => Text(e.toString() + "(${e.runtimeType}) | ", style: TextStyle(fontSize: 10, fontFamily: "RobotoMono"),)).toList(), )
+            children: message.message.arguments.map((e) => Text("$e(${e.runtimeType}) | ", style: const TextStyle(fontSize: 10, fontFamily: "RobotoMono"),)).toList(), )
           )
         ],
       )
