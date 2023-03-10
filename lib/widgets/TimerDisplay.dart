@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:stagecon/widgets/TimeDisplay.dart';
 
 enum TimerDisplayMode {
@@ -15,10 +16,15 @@ class TimerDisplayController {
     TimerDisplayMode mode = TimerDisplayMode.countdown,
     Color countdownColor = Colors.grey 
   }) {
+      //preferences
+      final pref = Hive.box("preferences");
+
       this._running = running;
       this._mode = mode;
       this._startingAt = startingAt;
       this._countdownColor = countdownColor;
+      this._msPrecision = pref.get("default_ms_precision");
+      this._flashRate = pref.get("default_countdown_flash_rate");
   }
 
   late Color _countdownColor;
@@ -47,6 +53,18 @@ class TimerDisplayController {
     _startingAt = v;
   });
   Duration get startingAt => _startingAt;
+
+  late int _msPrecision;
+  set msPrecision(int v) => _update("msPrecision", () {
+    _msPrecision = v;
+  });
+  int get msPrecision => _msPrecision;
+  
+  late int _flashRate;
+  set flashRate(int v) => _update("flashRate", () {
+    _flashRate = v;
+  });
+  int get flashRate => _flashRate;
 
   // reset
 
@@ -84,7 +102,7 @@ class TimerDisplayController {
 
 class TimerDisplay extends StatefulWidget {
   ///If [mode] is stopwatch then [startingAt] will be the starting time and it will count up from there. if [mode] is countdown then  it will start counting down from [startingAt]
-  TimerDisplay({
+  const TimerDisplay({
     Key? key,
     required this.controller,
     // this.countdownColor= Colors.grey,
@@ -194,7 +212,7 @@ class _TimerDisplayState extends State<TimerDisplay> {
     } else {
       _startTime = DateTime.now();
     }
-    
+    countdownColor = widget.controller.countdownColor;
     _timer.cancel();
     _flashTimer.cancel();
     _timer = Timer.periodic(const Duration(milliseconds: 8), (_) => handleTick());
@@ -203,7 +221,7 @@ class _TimerDisplayState extends State<TimerDisplay> {
   //flashes the countdown clock when it reaches 0;
   countdownDoneFlash() {
     _flashTimer.cancel();
-    _flashTimer = Timer.periodic(const Duration(milliseconds: 500), (_) => handleDoneFlash());
+    _flashTimer = Timer.periodic(Duration(milliseconds: widget.controller.flashRate), (_) => handleDoneFlash());
   }
 
   handleDoneFlash() {
@@ -226,8 +244,11 @@ class _TimerDisplayState extends State<TimerDisplay> {
 
     return Stack(
       children: [
+        //MARK: Countdown bar
         if(widget.controller.mode == TimerDisplayMode.countdown )Positioned.fill(left: 0, child: FractionallySizedBox(widthFactor: 1 -(currentDuration.inMilliseconds/widget.controller.startingAt.inMilliseconds), child: Container(color: countdownColor))),
-        Positioned(child: TimeDisplay(duration: currentDuration, mode: TimeDisplayMode.h24,))
+
+
+        Positioned(child: TimeDisplay(duration: currentDuration, mode: TimeDisplayMode.h24, msPrecision: widget.controller.msPrecision,))
       ],
 
     );

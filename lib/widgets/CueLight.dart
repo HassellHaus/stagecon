@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
 
-class CueLight extends StatelessWidget {
-  const CueLight({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
+// class CueLight extends StatelessWidget {
+//   const CueLight({super.key, this.color});
+//   final Color color;
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
       
-    );
-  }
-}
+//     );
+//   }
+// }

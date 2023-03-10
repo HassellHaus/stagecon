@@ -44,8 +44,8 @@ class _TimeViewState extends State<TimeView> {
         
         case TimerEventOperation.set:
         if(timers[opt.id] == null) {
-            timerControllers[opt.id] = TimerDisplayController(startingAt: opt.startingAt ?? Duration.zero, mode: opt.mode!);
-            timers[opt.id] = TimerDisplay(
+            timerControllers[opt.id!] = TimerDisplayController(startingAt: opt.startingAt ?? Duration.zero, mode: opt.mode!);
+            timers[opt.id!] = TimerDisplay(
               key: ValueKey("TimeView-TimerDisplay-${opt.id}"),
               controller: timerControllers[opt.id]!,
             );    
@@ -69,12 +69,39 @@ class _TimeViewState extends State<TimeView> {
 
           break;
         case TimerEventOperation.delete:
-          timers.remove(opt.id);
-          timerControllers.remove(opt.id);
+          if(opt.id == null) {
+
+            //a delete all command
+            //god this is unreadable
+            timers.forEach((key, value) => opt.mode!=null?value.controller.mode == opt.mode? timers.remove(opt.id): null : timers.remove(key));
+            timerControllers.forEach((key, value) => opt.mode!=null?value.mode == opt.mode? timerControllers.remove(opt.id): null : timerControllers.remove(key));
+          } else {
+            //just deletes one
+            timers.remove(opt.id);
+            timerControllers.remove(opt.id);
+          }
           if(mounted) setState(() {});
           break;
+
+        //MARK: FOrmat events
         case TimerEventOperation.format:
-          // TODO: Handle this case.
+          if(timerControllers[opt.id] == null) {
+            Get.snackbar("No timer with that name exists", "Please create a timer with the name ${opt.id}");
+          }
+          switch(opt.subOperation) {
+            case "color": 
+              timerControllers[opt.id]!.countdownColor = opt.extraData as Color;
+              break;
+
+            case "msPrecision": 
+              timerControllers[opt.id]!.msPrecision = opt.extraData as int;
+              break;
+
+            case "flashRate": 
+              timerControllers[opt.id]!.flashRate = opt.extraData as int;
+              break;
+          }
+          if(mounted) setState(() {});
           break;
       }
     
@@ -125,7 +152,7 @@ class _TimeViewState extends State<TimeView> {
                     padding: const EdgeInsets.all(15),
                     decoration: BoxDecoration(
                         border: Border.all(width: 3, color: e.value.controller.countdownColor)),
-                    duration: const Duration(milliseconds: 500),
+                    duration: const Duration(milliseconds: 100),
                     child: FittedBox(
                         fit: BoxFit.scaleDown,
                         child: Column(

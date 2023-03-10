@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 // class TimeDisplaySettings {
@@ -8,11 +10,12 @@ enum TimeDisplayMode {
   h12
 }
 class TimeDisplay extends StatelessWidget {
-  const TimeDisplay({super.key, required this.duration, this.textSize, this.mode = TimeDisplayMode.h12});
+  const TimeDisplay({super.key, required this.duration, this.textSize, this.mode = TimeDisplayMode.h12, this.msPrecision = 3});
 
   final Duration duration;
   final int? textSize;
   final TimeDisplayMode mode;
+  final int msPrecision;
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +44,7 @@ class TimeDisplay extends StatelessWidget {
         //seconds
         Text(seconds.toString().padLeft(2, '0')),
         //milliseconds
-        Text( "." + milliseconds.toString().padLeft(3, '0')),
+        if(msPrecision !=0)Text( "." + milliseconds.toString().padLeft(3, '0').substring(0,min(msPrecision, 3))),
 
         if(mode == TimeDisplayMode.h12) Text((duration.inHours%24)>=12?" PM":" AM")
       ]),

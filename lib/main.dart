@@ -15,11 +15,11 @@ void main() async  {
   if(!preferences.containsKey("osc_port")) {
     preferences.put("osc_port", 4455);
   }
-  if(!preferences.containsKey("less_ms_precision")) {
-    preferences.put("less_ms_precision", false);
+  if(!preferences.containsKey("default_ms_precision")) {
+    preferences.put("default_ms_precision", 1);
   }
-  if(!preferences.containsKey("countdown_flash_rate")) {
-    preferences.put("countdown_flash_rate", 500);
+  if(!preferences.containsKey("default_countdown_flash_rate")) {
+    preferences.put("default_countdown_flash_rate", 500);
   }
   if(!preferences.containsKey("telemetry")) {
     preferences.put("telemetry", true);
