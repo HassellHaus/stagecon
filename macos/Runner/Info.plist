@@ -28,6 +28,10 @@
 	<string>$(PRODUCT_COPYRIGHT)</string>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>We need to be able to listen to incoming OSC messages.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>This app does not use location services</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app does not use location services</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>

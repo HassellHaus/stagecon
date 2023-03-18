@@ -28,6 +28,10 @@
 	<true/>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>We need to be able to listen for incoming OSC commands\</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>This app does not use location services</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app does not use location services</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
