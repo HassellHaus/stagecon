@@ -1,28 +1,40 @@
 PODS:
   - Flutter (1.0.0)
+  - flutter_install_app_plugin (0.4.1):
+    - Flutter
   - network_info_plus (0.0.1):
     - Flutter
   - path_provider_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
+  - url_launcher_ios (0.0.1):
+    - Flutter
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
+  - flutter_install_app_plugin (from `.symlinks/plugins/flutter_install_app_plugin/ios`)
   - network_info_plus (from `.symlinks/plugins/network_info_plus/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/ios`)
+  - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
 
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
+  flutter_install_app_plugin:
+    :path: ".symlinks/plugins/flutter_install_app_plugin/ios"
   network_info_plus:
     :path: ".symlinks/plugins/network_info_plus/ios"
   path_provider_foundation:
     :path: ".symlinks/plugins/path_provider_foundation/ios"
+  url_launcher_ios:
+    :path: ".symlinks/plugins/url_launcher_ios/ios"
 
 SPEC CHECKSUMS:
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
+  flutter_install_app_plugin: 01e38428efa58de7802c9b1c8c3e9dfbf5bd7f81
   network_info_plus: b78876159360f5580608c2cea620d6ceffabd0ad
   path_provider_foundation: c68054786f1b4f3343858c1e1d0caaded73f0be9
+  url_launcher_ios: 08a3dfac5fb39e8759aeb0abbd5d9480f30fc8b4
 
 PODFILE CHECKSUM: ef19549a9bc3046e7bb7d2fab4d021637c0c58a3
 
