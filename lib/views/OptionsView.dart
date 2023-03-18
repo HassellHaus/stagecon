@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:network_info_plus/network_info_plus.dart';
+import 'package:stagecon/views/AboutView.dart';
 import 'package:stagecon/views/OSCLogView.dart';
 
 class ConfigurationView extends StatefulWidget {
@@ -40,15 +41,33 @@ class _ConfigurationViewState extends State<ConfigurationView> {
             SizedBox(height: 50 + MediaQuery.of(context).padding.top),
             
             CupertinoListSection.insetGrouped(
+              // header: const Text("About"),
+              children: [
+                CupertinoListTile.notched(
+                  leading: Icon(CupertinoIcons.question_circle_fill),
+                  title: Text("About Stagecon"),
+                  trailing: const CupertinoListTileChevron(),
+                  onTap: () => Get.to(()=> const AboutView()),
+                )
+              ],
+            ),
+
+            CupertinoListSection.insetGrouped(
               header: const Text("OSC Examples"),
               footer:  Text("You need an osc compatible program to send these.  This app was built with with QLab in mind.", style: TextStyle(fontSize: 12, color: CupertinoColors.secondaryLabel.resolveFrom(context) ),),
               children: const [
                 CupertinoListTile.notched(title:  Text("Create/Edit a timer"), subtitle: FittedBox( fit: BoxFit.scaleDown, child:  Text("/stagecon/[countdown|stopwatch]/set “Timer Name” ms s m h d ", style: TextStyle(fontSize: 20),),)),
-                CupertinoListTile.notched(title:  Text("Reset a timer"), subtitle: FittedBox( fit: BoxFit.scaleDown, child:  Text("/stagecon/[countdown|stopwatch]/reset “Timer Name”", style: TextStyle(fontSize: 20),),)),
-                CupertinoListTile.notched(title:  Text("Start/resume a timer"), subtitle: FittedBox( fit: BoxFit.scaleDown, child:  Text("/stagecon/[countdown|stopwatch]/start “Timer Name”", style: TextStyle(fontSize: 20),),)),
-                CupertinoListTile.notched(title:  Text("Stop/pause a timer"), subtitle: FittedBox( fit: BoxFit.scaleDown, child:  Text("/stagecon/[countdown|stopwatch]/stop “Timer Name”", style: TextStyle(fontSize: 20),),)),
-                CupertinoListTile.notched(title:  Text("Delete a timer"), subtitle: FittedBox( fit: BoxFit.scaleDown, child:  Text("/stagecon/[countdown|stopwatch]/delete “Timer Name”", style: TextStyle(fontSize: 20),),)),
-
+                CupertinoListTile.notched(title:  Text("Reset a timer"), subtitle: FittedBox( fit: BoxFit.scaleDown, child:  Text("/stagecon/timer/reset “Timer Name”", style: TextStyle(fontSize: 20),),)),
+                CupertinoListTile.notched(title:  Text("Start/resume a timer"), subtitle: FittedBox( fit: BoxFit.scaleDown, child:  Text("/stagecon/timer/start “Timer Name”", style: TextStyle(fontSize: 20),),)),
+                CupertinoListTile.notched(title:  Text("Stop/pause a timer"), subtitle: FittedBox( fit: BoxFit.scaleDown, child:  Text("/stagecon/timer/stop “Timer Name”", style: TextStyle(fontSize: 20),),)),
+                CupertinoListTile.notched(title:  Text("Delete a timer"), subtitle: FittedBox( fit: BoxFit.scaleDown, child:  Text("/stagecon/timer/delete “Timer Name”", style: TextStyle(fontSize: 20),),)),
+                CupertinoListTile.notched(title:  Text("Delete all timers"), subtitle: FittedBox( fit: BoxFit.scaleDown, child:  Text("/stagecon/timer/deleteAll", style: TextStyle(fontSize: 20),),)),
+                CupertinoListTile.notched(title:  Text("Delete all countdowns or stopwatches"), subtitle: FittedBox( fit: BoxFit.scaleDown, child:  Text("/stagecon/[countdown|stopwatch]/deleteAll", style: TextStyle(fontSize: 20),),)),
+ 
+                CupertinoListTile.notched(title:  Text("Change a timer's color"), subtitle: FittedBox( fit: BoxFit.scaleDown, child:  Text("/stagecon/timer/format/color \n “Timer Name” r[0-255] g[0-255] b[0-255] a[0-255]", maxLines: 2, style: TextStyle(fontSize: 20),),)),
+                CupertinoListTile.notched(title:  Text("Change the millisecond decimal precision"), subtitle: FittedBox( fit: BoxFit.scaleDown, child:  Text("/stagecon/timer/format/msPrecision [0-3]", style: TextStyle(fontSize: 20),),)),
+                CupertinoListTile.notched(title:  Text("Change countdown flash rate"), subtitle: FittedBox( fit: BoxFit.scaleDown, child:  Text("/stagecon/timer/format/flashRate milliseconds(int)", style: TextStyle(fontSize: 20),),)),
+                
                 CupertinoListTile.notched(title:  Text("Send a message"), subtitle: FittedBox( fit: BoxFit.scaleDown, child:  Text("/stagecon/message/post “Message Title” “Message Content” ttl(ms)", style: TextStyle(fontSize: 20),),)),
 
               ],

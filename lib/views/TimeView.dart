@@ -73,8 +73,11 @@ class _TimeViewState extends State<TimeView> {
 
             //a delete all command
             //god this is unreadable
-            timers.forEach((key, value) => opt.mode!=null?value.controller.mode == opt.mode? timers.remove(opt.id): null : timers.remove(key));
-            timerControllers.forEach((key, value) => opt.mode!=null?value.mode == opt.mode? timerControllers.remove(opt.id): null : timerControllers.remove(key));
+            // timers.forEach((key, value) => opt.mode!=null?value.controller.mode == opt.mode? timers.remove(opt.id): null : timers.remove(key));
+            // timerControllers.forEach((key, value) => opt.mode!=null?value.mode == opt.mode? timerControllers.remove(opt.id): null : timerControllers.remove(key));
+            timers.removeWhere((key, value) => opt.mode!=null?value.controller.mode == opt.mode:true,);
+            timerControllers.removeWhere((key, value) => opt.mode!=null?value.mode == opt.mode:true,);
+
           } else {
             //just deletes one
             timers.remove(opt.id);
@@ -119,9 +122,11 @@ class _TimeViewState extends State<TimeView> {
 
   @override
   Widget build(BuildContext context) {
+    // print(timers.length);
     //todo: optimize the building of the clock items.  Maybe separate them from the main build method?
     //calculate the optimal cross count
-    int crossCount = calculateCrossCount(timers.length);
+
+    int crossCount = timers.isNotEmpty?calculateCrossCount(timers.length):1;
     double aspect =  MediaQuery.of(context).size.width / MediaQuery.of(context).size.height;;
 
     // bool isPortrait = MediaQuery.of(context).size.width < MediaQuery.of(context).size.height;

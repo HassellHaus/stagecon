@@ -40,6 +40,8 @@ dependencies:
   network_info_plus: ^3.0.2
   hive: ^2.2.3
   hive_flutter: ^1.1.0
+  url_launcher: ^6.1.10
+  flutter_install_app_plugin: ^0.4.3
   
   
 
@@ -55,11 +57,14 @@ dev_dependencies:
   flutter_lints: ^2.0.0
   flutter_launcher_icons: 0.11.0
   msix: ^3.7.0
+  flutter_oss_licenses: ^2.0.1
+
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
-
+# COMMANDS 
+# flutter pub run flutter_oss_licenses:generate.dart -o ./assets/Acknowledgements.json --json
 # launcher icons 
 # flutter pub run flutter_launcher_icons
 
@@ -101,8 +106,9 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
+  assets:
+    - assets/icon/rounded.png
+    - assets/Acknowledgements.json
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
