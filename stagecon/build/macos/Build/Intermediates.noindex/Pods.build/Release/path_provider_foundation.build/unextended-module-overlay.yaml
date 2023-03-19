@@ -1,0 +1,14 @@
+{
+  'version': 0,
+  'use-external-names': 'false',
+  'case-sensitive': 'false',
+  'roots': [{
+    'type': 'directory',
+    'name': "/Users/joseph/Documents/GitHub/stagecon/build/macos/Build/Products/Release/path_provider_foundation/path_provider_foundation.framework/Modules"
+    'contents': [{
+      'type': 'file',
+      'name': "module.modulemap",
+      'external-contents': "/Users/joseph/Documents/GitHub/stagecon/build/macos/Build/Intermediates.noindex/Pods.build/Release/path_provider_foundation.build/unextended-module.modulemap",
+    }]
+  }]
+}

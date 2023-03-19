@@ -1,0 +1,6 @@
+version: "Apple Swift version 5.7.2 (swiftlang-5.7.2.135.5 clang-1400.0.29.51)"
+options: "15bb7f765251112a1aebbf727b622c3e16783382f6ad5e93dda49b783b2333a1"
+build_start_time: [1677382589, 775859832]
+build_end_time: [1677382589, 792328834]
+inputs:
+  "/Users/joseph/.pub-cache/hosted/pub.dev/network_info_plus-3.0.2/macos/Classes/NetworkInfoPlusPlugin.swift": !private [1677378255, 215461254]

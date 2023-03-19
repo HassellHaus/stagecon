@@ -1,0 +1,11 @@
+framework module flutter_install_app_plugin {
+  umbrella header "flutter_install_app_plugin-umbrella.h"
+
+  export *
+  module * { export * }
+}
+
+module flutter_install_app_plugin.Swift {
+  header "flutter_install_app_plugin-Swift.h"
+  requires objc
+}
