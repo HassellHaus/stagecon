@@ -89,7 +89,7 @@ msix_config:
   publisher_display_name: HassellHaus LLC
   identity_name: haus.hassell.stagecon
   # msix_version: 1.0.0.0
-  logo_path: /assets/icon/rounded.png
+  logo_path: ./assets/icon/rounded.png
   # capabilities: internetClient, location, microphone, webcam
 
 
