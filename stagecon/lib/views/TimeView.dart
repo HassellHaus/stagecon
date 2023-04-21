@@ -127,15 +127,22 @@ class _TimeViewState extends State<TimeView> {
     //calculate the optimal cross count
 
     int crossCount = timers.isNotEmpty?calculateCrossCount(timers.length):1;
-    double aspect =  MediaQuery.of(context).size.width / MediaQuery.of(context).size.height;;
+    double aspect =  MediaQuery.of(context).size.width / MediaQuery.of(context).size.height;
 
     // bool isPortrait = MediaQuery.of(context).size.width < MediaQuery.of(context).size.height;
     // print(isPortrait);
     //   if(isPortrait) {
-    //     aspect =  MediaQuery.of(context).size. width/ MediaQuery.of(context).size. height;
+    //     // crossCount 
+    //     // aspect =  MediaQuery.of(context).size. width/ MediaQuery.of(context).size. height;
     //   } else {
         
     // }
+
+    if(timers.length == 2) {
+      crossCount = 1;
+      aspect = MediaQuery.of(context).size.width / (MediaQuery.of(context).size.height*0.5);
+    }
+    
 
     if(timers.isNotEmpty ) {
       showTutorial = false;
