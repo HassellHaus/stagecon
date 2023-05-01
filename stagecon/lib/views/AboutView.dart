@@ -62,6 +62,13 @@ class AboutView extends StatelessWidget {
             CupertinoListTile.notched(title: const Text("Open Source Licenses"), trailing: const CupertinoListTileChevron(), onTap: () => Get.to(()=> const AcknowledgementsView()),)
           ],
         ),
+        //policies
+        CupertinoListSection.insetGrouped(
+          children: [
+            CupertinoListTile.notched(title: const Text("Privacy Policy"),trailing: const CupertinoListTileChevron(), onTap:() => launchUrlString("https://hassell.haus/apps/stagecon/privacy/"),),
+            CupertinoListTile.notched(title: const Text("Terms of Service"), trailing: const CupertinoListTileChevron(), onTap: () => launchUrlString("https://hassell.haus/apps/stagecon/terms/"),)
+          ],
+        ),
 
         // const OtherApps()
         
