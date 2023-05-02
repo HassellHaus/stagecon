@@ -49,7 +49,7 @@ class AboutView extends StatelessWidget {
             
 
             const CupertinoListTile.notched(         
-              leading: const Icon(CupertinoIcons.building_2_fill),
+              // leading: const Icon(CupertinoIcons.building_2_fill),
               title: Text('Made with ❤️'),
             ),
 

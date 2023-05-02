@@ -150,11 +150,13 @@ class _TimeViewState extends State<TimeView> {
 
 
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onDoubleTap: () => Get.to(()=> const ConfigurationView(), fullscreenDialog:true),
       child: DefaultTextStyle(
         style: const TextStyle(color: Colors.white, fontSize: 3000),
         child: showTutorial
-        ?   const Center(child: Text("Listening on port 4455. Double tap for configuration", style: TextStyle(color: Colors.grey, fontSize: 15),),)
+        ?   Center(child: Text("Listening on port 4455. Double tap for configuration", style: TextStyle(color: Colors.grey, fontSize: 15),),)
+        
         :GridView.count(
             shrinkWrap: true,
             crossAxisCount: crossCount,

@@ -1,6 +1,8 @@
 import 'dart:io';
 
+import 'package:expandable/expandable.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 import 'package:stagecon/views/AboutView.dart';
@@ -16,7 +18,8 @@ class ConfigurationView extends StatefulWidget {
 class _ConfigurationViewState extends State<ConfigurationView> {
   final info = NetworkInfo();
   
-
+  late var expandableController = ExpandableController(initialExpanded: false);
+  // expandableController
   late var deviceIP = NetworkInterface.list();
   // Future printIps() async {
   //   for (var interface in await NetworkInterface.list()) {
@@ -89,16 +92,45 @@ class _ConfigurationViewState extends State<ConfigurationView> {
                   }
                   
                   if(snapshot.hasData) {
-                    List<Widget> deviceIps = [];
+                    
+                    
+                    List<Widget> featuredDeviceIps = [];
+                    List<Widget> otherDeviceIps = [];
+
+                    
                     for(var interface in snapshot.data!) {
                       for(var addr in interface.addresses) {
-                        
-                        deviceIps.add(CupertinoListTile.notched(title: const Text("Device IP"), subtitle: FittedBox( fit: BoxFit.scaleDown, child: Text(addr.address)), additionalInfo: Text(interface.name),));
+                        if(interface.name == "en0" || interface.name == "wlan0") {
+                          featuredDeviceIps.add(CupertinoListTile.notched(title: const Text("Device IP"), subtitle: FittedBox( fit: BoxFit.scaleDown, child: Text(addr.address)), additionalInfo: Text(interface.name),));
+                        } else {
+                          otherDeviceIps.add(CupertinoListTile.notched(title: const Text("Device IP"), subtitle: FittedBox( fit: BoxFit.scaleDown, child: Text(addr.address)), additionalInfo: Text(interface.name),));
+                        }
+                        // deviceIps.add(CupertinoListTile.notched(title: const Text("Device IP"), subtitle: FittedBox( fit: BoxFit.scaleDown, child: Text(addr.address)), additionalInfo: Text(interface.name),));
                       }
                     }
                     return Column(
                       mainAxisSize: MainAxisSize.min,
-                      children: deviceIps,
+                      children: [
+                        Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: featuredDeviceIps,
+                      ),
+                      if(otherDeviceIps.isNotEmpty) Material(child: ExpandablePanel(
+                        header: CupertinoListTile.notched(title: Text("View All"), onTap: () => expandableController.toggle()),
+                        collapsed: Container(),
+                        expanded: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: otherDeviceIps,
+                        ),
+                        controller: expandableController,
+                        theme: const ExpandableThemeData(
+                          tapHeaderToExpand: true,
+                          useInkWell: false,
+                        // controller: ExpandableController(),
+                      )
+                      ))
+
+                      ],
                     );
                   } else {
                     return const CupertinoListTile.notched(title: Text("Device IP"), subtitle: Text("Finding IP"));
@@ -115,7 +147,9 @@ class _ConfigurationViewState extends State<ConfigurationView> {
               children: [
                 CupertinoListTile.notched(title: const  Text("OSC Log"), onTap: () => Get.to(()=> const OSCLogView()), trailing: const CupertinoListTileChevron(),),
               ],
-            )
+            ),
+
+            SizedBox(height: MediaQuery.of(context).padding.bottom,),
           ], 
         ),
       ),
