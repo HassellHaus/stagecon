@@ -15,7 +15,7 @@ class TimeView extends StatefulWidget {
   State<TimeView> createState() => _TimeViewState();
 }
 
-class _TimeViewState extends State<TimeView> {
+class _TimeViewState extends State<TimeView>  with WidgetsBindingObserver {
   OSCcontroler oscCon = Get.find();
   Map<String, TimerDisplay> timers = {
     // "test": TimerDisplay(startingAt: Duration(days: 3), running: true,),
@@ -33,7 +33,37 @@ class _TimeViewState extends State<TimeView> {
   @override
   void initState() {
     oscCon.addTimerEventListener(handleOSCEvents);
+    WidgetsBinding.instance.addObserver(this);
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+     switch (state) {
+      case AppLifecycleState.resumed:
+        print('app resumed');
+        
+        break;
+      
+      case AppLifecycleState.inactive:
+        print('app inactive');
+        break;
+      
+      case AppLifecycleState.paused:
+        print('app paused');
+        break;
+    
+      case AppLifecycleState.detached:
+        print('app deatched');
+        // oscCon.dispose();
+        break;
+    }
   }
 
   handleOSCEvents(TimerEventOptions opt) {
