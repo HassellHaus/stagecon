@@ -5,10 +5,9 @@
 
 ## Downloads
 ### Direct (free)
-~~You can find all the downloads on the [releases page](https://github.com/HassellHaus/stagecon/releases).~~  
-NOTE: Will be available soon
-### App Stores
-NOTE: Will be available soon  
+You can find all the downloads on the [releases page](https://github.com/HassellHaus/stagecon/releases).
+### App Stores 
+The [Product Page](https://hassell.haus/apps/stagecon) has links to all the downloads!
 ***To help fund development the app store versions are available for a one time fee.  You will always be able to download Stagecon builds for free from the website.***
 ### Betas
 macOS and iOS [TestFlight](https://shrti.sh/g-stagecon-testflight).
