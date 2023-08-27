@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:get/get.dart';
 import 'package:stagecon/osc/osc.dart';
+import 'package:stagecon/types/message_event.dart';
 import 'package:stagecon/types/timer_event.dart';
 
 import 'package:stagecon/widgets/TimerDisplay.dart';
@@ -11,6 +12,7 @@ import '../widgets/MessageOverlay.dart';
 
 typedef TimerEventCallback = Function(TimerEventOptions);
 typedef OSCLogEventCallback = Function(OSCMessage);
+typedef MessageEventCallback = Function(MessageEvent);
 
 
 
@@ -36,6 +38,18 @@ class OSCcontroler extends GetxController{
     // print("HI");
     timerListeners.forEach((element) {element(options);});
   }
+
+    Set<MessageEventCallback> messageListeners = {};
+    addMessageEventListener(MessageEventCallback func) {
+      messageListeners.add(func);
+    }
+    removeMessageEventListener(MessageEventCallback func) {
+      messageListeners.remove(func);
+    }
+    callMessageEventListeners(MessageEvent options) {
+      // print("HI");
+      messageListeners.forEach((element) {element(options);});
+    }
 
   Set<OSCLogEventCallback> logListeners = {};
   addLogEventListener(OSCLogEventCallback func) {
@@ -87,9 +101,9 @@ class OSCcontroler extends GetxController{
         else if(timerCommand) {
           String id =  msg.arguments[0] as String;
           if(msg.address.contains("/start",15)) {
-            callTimerEventListeners(TimerEventOptions(id: id, operation: TimerEventOperation.start));
-          } else if (msg.address.contains("/start",15)) {
-            callTimerEventListeners(TimerEventOptions(id: id, operation: TimerEventOperation.start));
+            callTimerEventListeners(TimerEventOptions(id: id, operation: TimerEventOperation.start, epochTime: DateTime.now()));
+          // } else if (msg.address.contains("/start",15)) {
+          //   callTimerEventListeners(TimerEventOptions(id: id, operation: TimerEventOperation.start, epochTime: DateTime.now()));
           } else if (msg.address.contains("/stop",15)) {
             callTimerEventListeners(TimerEventOptions(id: id, operation: TimerEventOperation.stop));
           } else if (msg.address.contains("/reset",15)) {

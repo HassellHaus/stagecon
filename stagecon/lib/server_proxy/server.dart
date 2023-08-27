@@ -7,6 +7,7 @@ import 'package:hive/hive.dart';
 import 'package:shelf/shelf_io.dart' as shelf_io;
 import 'package:shelf_web_socket/shelf_web_socket.dart';
 import 'package:stagecon/controllers/OscController.dart';
+import 'package:stagecon/types/message_event.dart';
 import 'package:stagecon/types/server_message.dart';
 import 'package:stagecon/types/timer_event.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -47,6 +48,13 @@ class ServerProxyServer {
       socket.sink.add(jsonEncode(ServerMessage(timerEvent: options).toJson()));
     }
   }
+
+  onMessageEvent(MessageEvent options) {
+    for(var socket in sockets) {
+      socket.sink.add(jsonEncode(ServerMessage(messageEvent: options).toJson()));
+    }
+  }
+
 
   // @override
   void dispose() {

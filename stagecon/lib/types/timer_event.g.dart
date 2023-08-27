@@ -16,6 +16,9 @@ TimerEventOptions _$TimerEventOptionsFromJson(Map<String, dynamic> json) =>
           : Duration(microseconds: json['startingAt'] as int),
       running: json['running'] as bool?,
       extraData: json['extraData'],
+      epochTime: json['epochTime'] == null
+          ? null
+          : DateTime.parse(json['epochTime'] as String),
       subOperation: json['subOperation'] as String?,
     );
 
@@ -27,6 +30,7 @@ Map<String, dynamic> _$TimerEventOptionsToJson(TimerEventOptions instance) =>
       'running': instance.running,
       'operation': _$TimerEventOperationEnumMap[instance.operation]!,
       'subOperation': instance.subOperation,
+      'epochTime': instance.epochTime?.toIso8601String(),
       'extraData': instance.extraData,
     };
 

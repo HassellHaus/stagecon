@@ -98,6 +98,13 @@ class _TimeViewState extends State<TimeView>  with WidgetsBindingObserver {
           timerControllers[opt.id]?.reset();
           break;
         case TimerEventOperation.start:
+          if(opt.epochTime != null) {
+            //epoch difference 
+            final diff =DateTime.now().difference(opt.epochTime!);
+            print(diff);
+            timerControllers[opt.id]?.startingAt = timerControllers[opt.id]!.startingAt - diff;
+            // timers[opt.id]?. = opt.startingAt ?? Duration.zero;
+          }
           timerControllers[opt.id]?.running = true;
 
           break;
@@ -123,7 +130,7 @@ class _TimeViewState extends State<TimeView>  with WidgetsBindingObserver {
           if(mounted) setState(() {});
           break;
 
-        //MARK: FOrmat events
+        //MARK: Format events
         case TimerEventOperation.format:
           if(timerControllers[opt.id] == null) {
             Get.snackbar("No timer with that name exists", "Please create a timer with the name ${opt.id}");

@@ -27,6 +27,7 @@ class TimerEventOptions {
   final bool? running;
   final TimerEventOperation operation;
   final String? subOperation;
+  final DateTime? epochTime;
   final dynamic extraData;
   // final Color? countdownColor
   const TimerEventOptions({
@@ -36,6 +37,7 @@ class TimerEventOptions {
     this.startingAt,
     this.running,
     this.extraData,
+    this.epochTime,
     this.subOperation
   });
 
