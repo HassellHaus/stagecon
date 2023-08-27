@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:stagecon/controllers/OscController.dart';
+import 'package:stagecon/server_proxy/client.dart';
+import 'package:stagecon/server_proxy/server.dart';
 import 'package:stagecon/views/TimeView.dart';
 import 'package:stagecon/widgets/TimeDisplay.dart';
 
@@ -16,6 +20,15 @@ void main() async  {
   if(!preferences.containsKey("osc_port")) {
     preferences.put("osc_port", 4455);
   }
+  if(!preferences.containsKey("server_port")) {
+    preferences.put("osc_port", 5566);
+  }
+  if(!preferences.containsKey("proxy_server_ip")) {
+    preferences.put("proxy_server_ip", null);
+  }
+if(!preferences.containsKey("proxy_client_url")) {
+    preferences.put("proxy_client_url", null);
+  }
   if(!preferences.containsKey("default_ms_precision")) {
     preferences.put("default_ms_precision", 1);
   }
@@ -27,6 +40,16 @@ void main() async  {
   }
 
   var oscCon = Get.put(OSCcontroler());
+  if(Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+    var server = ServerProxyServer();
+    server.serve();
+  } else {
+    var client = ServerProxyClient(wsUrl: Uri.parse('ws://192.168.1.223:5566'));
+    
+    // client.listen();
+    
+  }
+  
   runApp(const MyApp());
 }
 

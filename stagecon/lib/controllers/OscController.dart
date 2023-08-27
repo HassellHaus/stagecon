@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:get/get.dart';
 import 'package:stagecon/osc/osc.dart';
+import 'package:stagecon/types/timer_event.dart';
 
 import 'package:stagecon/widgets/TimerDisplay.dart';
 
@@ -11,44 +12,14 @@ import '../widgets/MessageOverlay.dart';
 typedef TimerEventCallback = Function(TimerEventOptions);
 typedef OSCLogEventCallback = Function(OSCMessage);
 
-enum TimerEventOperation {
-  set,
-  reset,
-  start,
-  stop,
-  delete,
-  format
-}
 
-enum TimerFormatOperation {
-  color,
-  msPrecision
-}
-
-class TimerEventOptions {
-  final String? id;
-  final TimerDisplayMode? mode;
-  final Duration? startingAt;
-  final bool? running;
-  final TimerEventOperation operation;
-  final String? subOperation;
-  final dynamic extraData;
-  // final Color? countdownColor
-  const TimerEventOptions({
-    this.id,
-    required this.operation,
-    this.mode,
-    this.startingAt,
-    this.running,
-    this.extraData,
-    this.subOperation
-  });
-}
 
 class OSCcontroler extends GetxController{
-  late OSCSocket socket;
-  OSCcontroler({int port = 4455}) {
-    socket = OSCSocket(serverPort: port);
+  OSCSocket? socket;
+  int port = 4455;
+  OSCcontroler({this.port = 4455}) {
+    // socket = OSCSocket(serverPort: port);
+    // socket = OSCSocket(serverPort: port);
     listen();
 
     
@@ -76,19 +47,13 @@ class OSCcontroler extends GetxController{
   callLogEventListener(OSCMessage message) {
     logListeners.forEach((element) {element(message);});
   }
-
-  ///Listen to osc messages.   
-  void listen() {
-    try{ 
-      socket.close();
-    } catch(e) {
-      print("Osc listen() Could not close socket: $e");
-    }
-    socket.listen((msg) {
+  /// Parses out an OSC message
+  parse(OSCMessage msg) {
+    print(msg);
       callLogEventListener(msg);
 
       int argLen = msg.arguments.length;
-
+      
       try {
         bool stopwatchCommand = msg.address.startsWith("/stagecon/stopwatch"); // offset 19
         bool countdownCommand = msg.address.startsWith("/stagecon/countdown"); // offset 19;
@@ -187,12 +152,28 @@ class OSCcontroler extends GetxController{
               message: e.toString(),
             ));
           }
-      // socket.reply(OSCMessage('/received', arguments: []));
-    });
+
   }
 
-  void dispose() {
+  ///Listen to osc messages.   
+  void listen() {
+    try{ 
+      socket?.close();
+      socket = OSCSocket(serverPort: port);
+      print("Listening on port $port");
+    } catch(e) {
+      print("Osc listen() Could not close socket: $e");
+      rethrow;
+    }
     
-    socket.close();
+    socket!.listen((msg) {
+      // socket.reply(OSCMessage('/received', arguments: []));
+      parse(msg);
+    });
+  }
+  @override
+  void dispose() {
+    socket?.close();
+    super.dispose(); 
   }
 }

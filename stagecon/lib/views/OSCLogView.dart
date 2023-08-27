@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 import 'package:stagecon/controllers/OscController.dart';
 import 'package:stagecon/osc/osc.dart';
@@ -14,7 +15,9 @@ class OSCLogView extends StatefulWidget {
 class _OSCLogViewState extends State<OSCLogView> {
   OSCcontroler osc = Get.find();
 
-  List<_MessageObj> messages = [];
+  List<_MessageObj> messages = [
+    // _MessageObj(message: OSCMessage("/test", arguments: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15])),
+  ];
 
   @override
   void initState() {
@@ -61,22 +64,25 @@ class _LogItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(children: [
       //time
-      Text(message.received.toString(), style: const TextStyle(fontSize: 8, fontFamily: "RobotoMono",),),
+      Text(DateFormat("yy-MM-dd hh:mm:ss").format(DateTime.now()), style: const TextStyle(fontSize: 8, fontFamily: "RobotoMono",),),
       const Text("|"),
       //message
-      Column(
+      Flexible(child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(message.message.address, style: const TextStyle(fontSize: 15, fontFamily: "RobotoMono")),
-          FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: message.message.arguments.map((e) => Text("$e(${e.runtimeType}) | ", style: const TextStyle(fontSize: 10, fontFamily: "RobotoMono"),)).toList(), )
-          )
+          Flexible(child: Wrap(
+            // mainAxisSize: MainAxisSize.min,
+
+            children: message.message.arguments.map((e) => Text("$e(${e.runtimeType}) | ", style: const TextStyle(fontSize: 10, fontFamily: "RobotoMono"),)).toList(), 
+          ))
+          // Flexible(child: FittedBox(
+          //   fit: BoxFit.scaleDown,
+          //   child: 
+          // ))
         ],
-      )
+      ))
       
     ],);
   }

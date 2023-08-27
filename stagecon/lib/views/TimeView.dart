@@ -6,6 +6,8 @@ import 'package:stagecon/controllers/OscController.dart';
 import 'package:stagecon/views/OptionsView.dart';
 import 'package:stagecon/widgets/TimerDisplay.dart';
 
+import '../types/timer_event.dart';
+
 class TimeView extends StatefulWidget {
   const TimeView({super.key, this.minSize = 400});
 
@@ -46,10 +48,11 @@ class _TimeViewState extends State<TimeView>  with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    // oscCon.dispose();
      switch (state) {
       case AppLifecycleState.resumed:
         print('app resumed');
-        oscCon.listen();
+        // oscCon.listen();
         break;
       
       case AppLifecycleState.inactive:
@@ -65,6 +68,8 @@ class _TimeViewState extends State<TimeView>  with WidgetsBindingObserver {
         print('app deatched');
         // oscCon.dispose();
         break;
+       case AppLifecycleState.hidden:
+         // TODO: Handle this case.
     }
   }
 
