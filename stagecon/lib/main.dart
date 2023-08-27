@@ -36,12 +36,11 @@ class MyApp extends StatelessWidget  {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    
+    OSCcontroler oscCon = Get.find();
     return GetMaterialApp(
-      debugShowCheckedModeBanner: false,
+      // debugShowCheckedModeBanner: false,
       onDispose: () {
-        // oscCon.dispose();
-
+        oscCon.dispose();
       },
       themeMode: ThemeMode.dark,
       title: 'StageCon',
@@ -58,7 +57,7 @@ class MyApp extends StatelessWidget  {
         primarySwatch: Colors.blue,
         
       ),
-      home: TimeView()
+      home: const TimeView()
     );
   }
 }

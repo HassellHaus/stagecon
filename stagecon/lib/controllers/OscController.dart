@@ -49,8 +49,41 @@ class OSCcontroler extends GetxController{
   late OSCSocket socket;
   OSCcontroler({int port = 4455}) {
     socket = OSCSocket(serverPort: port);
+    listen();
 
-    // try
+    
+  }
+  
+  Set<TimerEventCallback> timerListeners = {};
+  addTimerEventListener(TimerEventCallback func) {
+    timerListeners.add(func);
+  }
+  removeTimerEventListener(TimerEventCallback func) {
+    timerListeners.remove(func);
+  }
+  callTimerEventListeners(TimerEventOptions options) {
+    // print("HI");
+    timerListeners.forEach((element) {element(options);});
+  }
+
+  Set<OSCLogEventCallback> logListeners = {};
+  addLogEventListener(OSCLogEventCallback func) {
+    logListeners.add(func);
+  }
+  removeLogEventListener(OSCLogEventCallback func) {
+    logListeners.remove(func);
+  }
+  callLogEventListener(OSCMessage message) {
+    logListeners.forEach((element) {element(message);});
+  }
+
+  ///Listen to osc messages.   
+  void listen() {
+    try{ 
+      socket.close();
+    } catch(e) {
+      print("Osc listen() Could not close socket: $e");
+    }
     socket.listen((msg) {
       callLogEventListener(msg);
 
@@ -156,33 +189,7 @@ class OSCcontroler extends GetxController{
           }
       // socket.reply(OSCMessage('/received', arguments: []));
     });
-    
   }
-  
-  Set<TimerEventCallback> timerListeners = {};
-  addTimerEventListener(TimerEventCallback func) {
-    timerListeners.add(func);
-  }
-  removeTimerEventListener(TimerEventCallback func) {
-    timerListeners.remove(func);
-  }
-  callTimerEventListeners(TimerEventOptions options) {
-    // print("HI");
-    timerListeners.forEach((element) {element(options);});
-  }
-
-  Set<OSCLogEventCallback> logListeners = {};
-  addLogEventListener(OSCLogEventCallback func) {
-    logListeners.add(func);
-  }
-  removeLogEventListener(OSCLogEventCallback func) {
-    logListeners.remove(func);
-  }
-  callLogEventListener(OSCMessage message) {
-    logListeners.forEach((element) {element(message);});
-  }
-
-
 
   void dispose() {
     

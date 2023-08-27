@@ -40,6 +40,7 @@ class _TimeViewState extends State<TimeView>  with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+
     super.dispose();
   }
 
@@ -48,11 +49,12 @@ class _TimeViewState extends State<TimeView>  with WidgetsBindingObserver {
      switch (state) {
       case AppLifecycleState.resumed:
         print('app resumed');
-        
+        oscCon.listen();
         break;
       
       case AppLifecycleState.inactive:
         print('app inactive');
+
         break;
       
       case AppLifecycleState.paused:
