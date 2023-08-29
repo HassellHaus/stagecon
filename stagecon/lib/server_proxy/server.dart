@@ -1,5 +1,6 @@
 // import 'package:hive/hive.dart';
 // import 'package:shelf/shelf.dart';
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:get/get.dart';
@@ -12,9 +13,19 @@ import 'package:stagecon/types/server_message.dart';
 import 'package:stagecon/types/timer_event.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
+class SocketContainer {
+  WebSocketChannel socket;
+  DateTime lastPing = DateTime.now();
+  SocketContainer(this.socket);
+}
+
 class ServerProxyServer {
   OSCcontroler oscCon = Get.find();
-  List<WebSocketChannel> sockets = [];
+  List<SocketContainer> sockets = [];
+
+  //ping chron timer
+  Timer? pingTimer;
+
   void serve() async {
     var handler = webSocketHandler((WebSocketChannel webSocket) {
       
@@ -26,17 +37,36 @@ class ServerProxyServer {
       } else {
         print("New Websocket: ${sockets.length+1}");
       }
-      sockets.add(webSocket);
+      sockets.add(SocketContainer(webSocket));
       
       webSocket.stream.listen((message) {
         print(message);
-        webSocket.sink.add("echo $message");
+        if(message == "ping") {
+          webSocket.sink.add("pong");
+          return;
+        }
+        if(message == "pong") {
+          // update last pinged time
+          for(var socket in sockets) {
+            if(socket.socket == webSocket) {
+              socket.lastPing = DateTime.now();
+            }
+          }
+        }
+        // webSocket.sink.add("echo $message");
       });
     });
     
     var preferences = await Hive.box('preferences');
-    var server = await shelf_io.serve(handler, '192.168.1.223', preferences.get("server_port") ?? 5566).then((server) {
+
+    //Start the server
+    await shelf_io.serve(handler, '192.168.1.223', preferences.get("server_port") ?? 5566).then((server) {
       print('Serving at ws://${server.address.host}:${server.port}');
+    });
+
+    ///Ping every minute
+    pingTimer = Timer.periodic(const Duration(minutes: 1), (timer) {
+      pingAll();
     });
 
     oscCon.addTimerEventListener(onTimerEvent);
@@ -45,13 +75,30 @@ class ServerProxyServer {
 
   onTimerEvent(TimerEventOptions options) {
     for(var socket in sockets) {
-      socket.sink.add(jsonEncode(ServerMessage(timerEvent: options).toJson()));
+      socket.socket.sink.add(jsonEncode(ServerMessage(timerEvent: options).toJson()));
     }
   }
 
   onMessageEvent(MessageEvent options) {
     for(var socket in sockets) {
-      socket.sink.add(jsonEncode(ServerMessage(messageEvent: options).toJson()));
+      socket.socket.sink.add(jsonEncode(ServerMessage(messageEvent: options).toJson()));
+    }
+  }
+  /// Pings all sockets.
+  pingAll() {
+
+    //remove and close sockets not returning pings for 10 minutes
+    for(var socket in sockets) {
+      if(socket.lastPing.difference(DateTime.now()).inMinutes > 10) {
+        socket.socket.sink.close();
+        socket.socket.stream.drain();
+        sockets.remove(socket);
+      }
+    }
+
+    //Ping every socket
+    for(var socket in sockets) {
+      socket.socket.sink.add("ping");
     }
   }
 
@@ -59,6 +106,7 @@ class ServerProxyServer {
   // @override
   void dispose() {
     // super.dispose();
+    pingTimer?.cancel();
     oscCon.removeTimerEventListener(onTimerEvent);
   }
 }

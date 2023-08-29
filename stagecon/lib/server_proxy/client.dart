@@ -14,6 +14,7 @@
 // }
 
 
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:get/get.dart';
@@ -23,12 +24,38 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 
 class ServerProxyClient {
     OSCcontroler oscCon = Get.find();
-    late WebSocketChannel channel;
-    ServerProxyClient({required Uri wsUrl}) {
+    WebSocketChannel? channel;
+    DateTime lastPing = DateTime.now();
+    
+    Timer? pingTimer; 
+
+    Uri wsUrl;
+    ServerProxyClient({required this.wsUrl}) {
+      reconnect();
+    }
+      //check to see if we have recieved a ping in the last 1 mins
+    _periodicPing(Timer timer) {
+      if(DateTime.now().difference(lastPing) > Duration(minutes: 1)) {
+        print("No ping in 1 minutes.  Reconnecting");
+        reconnect();
+        
+      }
+    }
+
+    reconnect() {
+      dispose();
+      
       channel = WebSocketChannel.connect(wsUrl);
       print("Listening as client to $wsUrl");
+
+      pingTimer = Timer.periodic(Duration(minutes: 1), _periodicPing);
       
-      channel.stream.listen((message) {
+      channel!.stream.listen((message) {
+        if(message == "ping") {
+          lastPing = DateTime.now();
+          channel!.sink.add("pong");
+          return;
+        }
         print("Websocket: $message");
         try {
           final json = jsonDecode(message);
@@ -46,8 +73,15 @@ class ServerProxyClient {
         print(message);
         // channel.sink.close(status.goingAway);
       });
-
     }
+  
+    void dispose() {
+      channel?.sink.close();
+      channel?.stream.drain();
+      pingTimer?.cancel();
+      channel = null;
+    }
+    
 
     // listen() async {
     //   final wsUrl = Uri.parse('ws://192.168.1.223:5566');
