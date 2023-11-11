@@ -3,7 +3,6 @@ import 'dart:io';
 // import 'package:cupertino_lists/cupertino_lists.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_install_app_plugin/flutter_install_app_plugin.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 // import 'package:open_store/open_store.dart';
 // import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
 

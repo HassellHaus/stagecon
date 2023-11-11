@@ -4,6 +4,7 @@ import 'package:expandable/expandable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:macos_ui/macos_ui.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 import 'package:stagecon/views/AboutView.dart';
 import 'package:stagecon/views/OSCLogView.dart';
@@ -47,10 +48,57 @@ class _ConfigurationViewState extends State<ConfigurationView> {
               // header: const Text("About"),
               children: [
                 CupertinoListTile.notched(
-                  leading: Icon(CupertinoIcons.question_circle_fill),
-                  title: Text("About Stagecon"),
+                  leading: const Icon(CupertinoIcons.question_circle_fill),
+                  title: const Text("About Stagecon"),
                   trailing: const CupertinoListTileChevron(),
-                  onTap: () => Get.to(()=> const AboutView()),
+                  onTap: () {
+                    //navigate to const AboutView() without get
+                    Navigator.of(context, rootNavigator: false).push(
+                      
+                      MaterialPageRoute(builder: (context) => const AboutView()),
+                    );
+
+                    // Navigator.of(context, rootNavigator: true).push(
+                    //         MaterialPageRoute(
+                    //           // settings: RouteSettings(),
+                    //           builder: (_) {
+                    //             return MacosScaffold(
+                    //               toolBar: const ToolBar(
+                    //                 title: Text('New page'),
+                    //               ),
+                    //               children: [
+                    //                 ContentArea(
+                    //                   builder: (context, _) {
+                    //                     return Center(
+                    //                       child: PushButton(
+                    //                         controlSize: ControlSize.regular,
+                    //                         child: const Text('Go Back'),
+                    //                         onPressed: () {
+                    //                           Navigator.of(context).maybePop();
+                    //                         },
+                    //                       ),
+                    //                     );
+                    //                   },
+                    //                 ),
+                    //                 ResizablePane(
+                    //                   minSize: 180,
+                    //                   startSize: 200,
+                    //                   windowBreakpoint: 700,
+                    //                   resizableSide: ResizableSide.left,
+                    //                   builder: (_, __) {
+                    //                     return const Center(
+                    //                       child: Text('Resizable Pane'),
+                    //                     );
+                    //                   },
+                    //                 ),
+                    //               ],
+                    //             );
+                    //           },
+                    //         ),
+                    //       );
+
+                    
+                  },
                 )
               ],
             ),
@@ -100,6 +148,7 @@ class _ConfigurationViewState extends State<ConfigurationView> {
                     
                     for(var interface in snapshot.data!) {
                       for(var addr in interface.addresses) {
+                        
                         if(interface.name == "en0" || interface.name == "wlan0") {
                           featuredDeviceIps.add(CupertinoListTile.notched(title: const Text("Device IP"), subtitle: FittedBox( fit: BoxFit.scaleDown, child: Text(addr.address)), additionalInfo: Text(interface.name),));
                         } else {
@@ -116,7 +165,7 @@ class _ConfigurationViewState extends State<ConfigurationView> {
                         children: featuredDeviceIps,
                       ),
                       if(otherDeviceIps.isNotEmpty) Material(child: ExpandablePanel(
-                        header: CupertinoListTile.notched(title: Text("View All"), onTap: () => expandableController.toggle()),
+                        header: CupertinoListTile.notched(title: const Text("View All"), onTap: () => expandableController.toggle()),
                         collapsed: Container(),
                         expanded: Column(
                           mainAxisSize: MainAxisSize.min,

@@ -2,69 +2,55 @@
 import 'dart:ui';
 
 import 'package:get/get.dart';
-import 'package:stagecon/osc/osc.dart';
+import 'package:hive/hive.dart';
 
-import 'package:stagecon/widgets/TimerDisplay.dart';
+import 'package:stagecon/osc/osc.dart';
+import 'package:stagecon/types/sc_timer.dart';
+import 'package:stagecon/types/message_event.dart';
+
 
 import '../widgets/MessageOverlay.dart';
 
-typedef TimerEventCallback = Function(TimerEventOptions);
+// typedef TimerEventCallback = Function(TimerEventOptions);
 typedef OSCLogEventCallback = Function(OSCMessage);
+typedef MessageEventCallback = Function(MessageEvent);
 
-enum TimerEventOperation {
-  set,
-  reset,
-  start,
-  stop,
-  delete,
-  format
-}
 
-enum TimerFormatOperation {
-  color,
-  msPrecision
-}
-
-class TimerEventOptions {
-  final String? id;
-  final TimerDisplayMode? mode;
-  final Duration? startingAt;
-  final bool? running;
-  final TimerEventOperation operation;
-  final String? subOperation;
-  final dynamic extraData;
-  // final Color? countdownColor
-  const TimerEventOptions({
-    this.id,
-    required this.operation,
-    this.mode,
-    this.startingAt,
-    this.running,
-    this.extraData,
-    this.subOperation
-  });
-}
 
 class OSCcontroler extends GetxController{
-  late OSCSocket socket;
-  OSCcontroler({int port = 4455}) {
-    socket = OSCSocket(serverPort: port);
+  OSCSocket? socket;
+  int port = 4455;
+  OSCcontroler({this.port = 4455}) {
+    // socket = OSCSocket(serverPort: port);
+    // socket = OSCSocket(serverPort: port);
     listen();
 
     
   }
   
-  Set<TimerEventCallback> timerListeners = {};
-  addTimerEventListener(TimerEventCallback func) {
-    timerListeners.add(func);
-  }
-  removeTimerEventListener(TimerEventCallback func) {
-    timerListeners.remove(func);
-  }
-  callTimerEventListeners(TimerEventOptions options) {
-    // print("HI");
-    timerListeners.forEach((element) {element(options);});
-  }
+  // Set<TimerEventCallback> timerListeners = {};
+  // addTimerEventListener(TimerEventCallback func) {
+  //   timerListeners.add(func);
+  // }
+  // removeTimerEventListener(TimerEventCallback func) {
+  //   timerListeners.remove(func);
+  // }
+  // callTimerEventListeners(TimerEventOptions options) {
+  //   // print("HI");
+  //   timerListeners.forEach((element) {element(options);});
+  // }
+
+  //   Set<MessageEventCallback> messageListeners = {};
+  //   addMessageEventListener(MessageEventCallback func) {
+  //     messageListeners.add(func);
+  //   }
+  //   removeMessageEventListener(MessageEventCallback func) {
+  //     messageListeners.remove(func);
+  //   }
+  //   callMessageEventListeners(MessageEvent options) {
+  //     // print("HI");
+  //     messageListeners.forEach((element) {element(options);});
+  //   }
 
   Set<OSCLogEventCallback> logListeners = {};
   addLogEventListener(OSCLogEventCallback func) {
@@ -74,29 +60,24 @@ class OSCcontroler extends GetxController{
     logListeners.remove(func);
   }
   callLogEventListener(OSCMessage message) {
-    logListeners.forEach((element) {element(message);});
+    for (var element in logListeners) {element(message);}
   }
-
-  ///Listen to osc messages.   
-  void listen() {
-    try{ 
-      socket.close();
-    } catch(e) {
-      print("Osc listen() Could not close socket: $e");
-    }
-    socket.listen((msg) {
+  /// Parses out an OSC message
+  parse(OSCMessage msg) async {
+    print(msg);
       callLogEventListener(msg);
 
       int argLen = msg.arguments.length;
-
+      
       try {
         bool stopwatchCommand = msg.address.startsWith("/stagecon/stopwatch"); // offset 19
         bool countdownCommand = msg.address.startsWith("/stagecon/countdown"); // offset 19;
-        TimerDisplayMode timerMode = stopwatchCommand?TimerDisplayMode.stopwatch:TimerDisplayMode.countdown;
+        TimerMode timerMode = stopwatchCommand?TimerMode.stopwatch:TimerMode.countdown;
 
         bool timerCommand = msg.address.startsWith("/stagecon/timer"); // offset:15 
         
-        //set command
+        
+        //MARK: set command
         if((stopwatchCommand || countdownCommand) && msg.address.contains("/set",19)) {
           
           String id =  msg.arguments[0] as String;
@@ -111,26 +92,54 @@ class OSCcontroler extends GetxController{
           final duration = Duration(days: d, hours: h, minutes: m, seconds: s, milliseconds: ms);
           // print(duration);
 
-          callTimerEventListeners(TimerEventOptions(id: id, operation: TimerEventOperation.set, startingAt: duration, mode: timerMode));
+          // TimerEventStore.instance.upsert(id: id, startingAt: duration, mode: timerMode);
+          // final 
+          // callTimerEventListeners(TimerEventOptions(id: id, operation: TimerEventOperation.set, startingAt: duration, mode: timerMode));
+          //get existing timer (if it exists)
+          ScTimer? existingTimer = ScTimer.get(id) ?? ScTimer();
+
+          existingTimer.id = id;
+          existingTimer.initialStartingAt = duration;
+          existingTimer.mode = timerMode;
+
+          await existingTimer.upsert();
+        
         } 
         //MARK: Delete All Command
         else if((stopwatchCommand || countdownCommand || timerCommand) && msg.address.contains("/deleteAll",15)) { // offset of 16 because the timer is shorter than the other two commands
-          callTimerEventListeners(TimerEventOptions(operation: TimerEventOperation.delete,  mode: timerCommand?null:timerMode));
+          // TimerEventStore.instance.value = {};
+          Hive.box<ScTimer>("timers").clear();
         }
 
         //MARK: all timer commands
         else if(timerCommand) {
           String id =  msg.arguments[0] as String;
+          ScTimer? existingTimer = ScTimer.get(id);
+          if(existingTimer == null) {
+            throw Exception("Unknown timer id: $id");
+            
+          }
           if(msg.address.contains("/start",15)) {
-            callTimerEventListeners(TimerEventOptions(id: id, operation: TimerEventOperation.start));
-          } else if (msg.address.contains("/start",15)) {
-            callTimerEventListeners(TimerEventOptions(id: id, operation: TimerEventOperation.start));
+            existingTimer.running = true;
+            await existingTimer.upsert();
+            // TimerEventStore.instance.upsert(ScTimerEvent(id: id, running: true, createdAt: DateTime.timestamp()));
+            // callTimerEventListeners(TimerEventOptions(id: id, operation: TimerEventOperation.start, epochTime: DateTime.now()));
+          // } else if (msg.address.contains("/start",15)) {
+          //   callTimerEventListeners(TimerEventOptions(id: id, operation: TimerEventOperation.start, epochTime: DateTime.now()));
           } else if (msg.address.contains("/stop",15)) {
-            callTimerEventListeners(TimerEventOptions(id: id, operation: TimerEventOperation.stop));
+            existingTimer.running = false;
+            await existingTimer.upsert();
+            // TimerEventStore.instance.upsert(ScTimerEvent(id: id, running: false, createdAt: DateTime.timestamp()));
+            // callTimerEventListeners(TimerEventOptions(id: id, operation: TimerEventOperation.stop));
           } else if (msg.address.contains("/reset",15)) {
-            callTimerEventListeners(TimerEventOptions(id: id, operation: TimerEventOperation.reset));
+            existingTimer.reset();
+            await existingTimer.upsert();
+            // TimerEventStore.instance.upsert(ScTimerEvent(id: id, createdAt: DateTime.timestamp()));
+            // callTimerEventListeners(TimerEventOptions(id: id, operation: TimerEventOperation.reset));
           } else if (msg.address.contains("/delete",15)) {
-            callTimerEventListeners(TimerEventOptions(id: id, operation: TimerEventOperation.delete));
+            ScTimer.delete(id);
+            // TimerEventStore.instance.value.removeWhere((key, value) => key == id);
+            // callTimerEventListeners(TimerEventOptions(id: id, operation: TimerEventOperation.delete));
           } else if (msg.address.contains("/format",15)) {
             //TODO: Format sub-commands go here.
             if(msg.address.contains("/color",22)) {
@@ -140,18 +149,25 @@ class OSCcontroler extends GetxController{
                 argLen >2?(msg.arguments[2] as int? ?? 0):0,
                 argLen >3?(msg.arguments[3] as int? ?? 0):0
               );
+              existingTimer.color = parsedColor;
+              await existingTimer.upsert();
               // Send a color update
-              callTimerEventListeners(TimerEventOptions(id: id, operation: TimerEventOperation.format, subOperation: "color", extraData: parsedColor));
+              // TimerEventStore.instance.upsert(ScTimerEvent(id: id, color: parsedColor));
+              // callTimerEventListeners(TimerEventOptions(id: id, operation: TimerEventOperation.format, subOperation: "color", extraData: parsedColor));
             }
             else if(msg.address.contains("/msPrecision",22)) {
               // millisecond precision
               int precision = argLen >1?(msg.arguments[1] as int? ?? 0):0;
+              existingTimer.msPrecision = precision;
+              await existingTimer.upsert();
 
-              callTimerEventListeners(TimerEventOptions(id: id, operation: TimerEventOperation.format, subOperation: "msPrecision", extraData: precision));
+              // callTimerEventListeners(TimerEventOptions(id: id, operation: TimerEventOperation.format, subOperation: "msPrecision", extraData: precision));
             }
             else if(msg.address.contains("/flashRate",22)) {
               int flashRate = argLen >1?(msg.arguments[1] as int? ?? 500):500;
-              callTimerEventListeners(TimerEventOptions(id: id, operation: TimerEventOperation.format, subOperation: "flashRate", extraData: flashRate));
+              existingTimer.flashRate = flashRate;
+              await existingTimer.upsert();
+              // callTimerEventListeners(TimerEventOptions(id: id, operation: TimerEventOperation.format, subOperation: "flashRate", extraData: flashRate));
             }
             // callTimerEventListeners(TimerEventOptions(id: id, operation: TimerEventOperation.format,));
           } else {
@@ -187,12 +203,28 @@ class OSCcontroler extends GetxController{
               message: e.toString(),
             ));
           }
-      // socket.reply(OSCMessage('/received', arguments: []));
-    });
+
   }
 
-  void dispose() {
+  ///Listen to osc messages.   
+  void listen() {
+    try{ 
+      socket?.close();
+      socket = OSCSocket(serverPort: port);
+      print("Listening on port $port");
+    } catch(e) {
+      print("Osc listen() Could not close socket: $e");
+      rethrow;
+    }
     
-    socket.close();
+    socket!.listen((msg) {
+      // socket.reply(OSCMessage('/received', arguments: []));
+      parse(msg);
+    });
+  }
+  @override
+  void dispose() {
+    socket?.close();
+    super.dispose(); 
   }
 }

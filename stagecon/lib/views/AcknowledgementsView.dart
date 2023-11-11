@@ -71,31 +71,31 @@ class _AckItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String? _subHead;
+    String? subHead = this.subHead;
     if(subHead != null ) {
-      if(subHead!.length < 40) {
-        _subHead = subHead;
+      if(subHead.length < 40) {
+        subHead = subHead;
       } else {
-        _subHead = subHead!.substring(0, 40) + '...';
+        subHead = '${subHead.substring(0, 40)}...';
       }
     } else if(license != null) {
       if(license!.length < 40) {
-        _subHead = license;
+        subHead = license;
       } else {
-        _subHead = license!.substring(0, 40) + '...';
+        subHead = '${license!.substring(0, 40)}...';
       }
     }
     // String? _subHead = subHead !=null? subHead!.substring(0, 40) + "..." :  (license != null ? license!.substring(0, 40) + "..." : null);
     return CupertinoListTile.notched(
       title: Text(head), 
       trailing: const CupertinoListTileChevron()  ,
-      subtitle: (_subHead!= null)?Text(_subHead):null, 
+      subtitle: (subHead!= null)?Text(subHead):null, 
       onTap: () {
         //showCupertinoModalBottomSheet(context: context, builder: (_) => _AckItemLicensePopup(head: head, license: license));
         //Get.to(()=> _AckItemLicensePopup(head: head, license: license, subHead: subHead,));
         Navigator.push(
           context,
-          CupertinoPageRoute(fullscreenDialog: true, builder: (context) => _AckItemLicensePopup(head: head, license: license, subHead: subHead,)),
+          CupertinoPageRoute(fullscreenDialog: false, builder: (context) => _AckItemLicensePopup(head: head, license: license, subHead: subHead,)),
         );
       }
     );

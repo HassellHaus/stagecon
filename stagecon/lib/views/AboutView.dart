@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:stagecon/views/AcknowledgementsView.dart';
-import 'package:stagecon/widgets/OtherApps.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class AboutView extends StatelessWidget {
@@ -11,7 +10,7 @@ class AboutView extends StatelessWidget {
   Widget build(BuildContext context) {
     return DefaultTextStyle(style: CupertinoTheme.of(context).textTheme.textStyle, child: CupertinoPageScaffold(
       backgroundColor: CupertinoColors.systemGroupedBackground.resolveFrom(context),
-      navigationBar: CupertinoNavigationBar(),
+      navigationBar: const CupertinoNavigationBar(),
       child: SingleChildScrollView(child: Column(children: [
         SizedBox(height: 80 + MediaQuery.of(context).padding.top),
         //Logo 

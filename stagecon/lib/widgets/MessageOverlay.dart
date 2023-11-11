@@ -14,7 +14,7 @@ class MessageOverlay extends StatelessWidget {
     return BackdropFilter(
       filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
       child: Container(
-      padding: EdgeInsets.all(15),
+      padding: const EdgeInsets.all(15),
       child: FittedBox(
         fit: BoxFit.scaleDown,
         child:Container(

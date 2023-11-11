@@ -1,17 +1,50 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
-class ClockDisplay extends StatefulWidget {
-  const ClockDisplay({super.key});
-
-  @override
-  State<ClockDisplay> createState() => _ClockDisplayState();
+// class TimeDisplaySettings {
+//   bool showMilliseconds
+// }
+enum ClockDisplayMode {
+  h24,
+  h12
 }
+class ClockDisplay extends StatelessWidget {
+  const ClockDisplay({super.key, required this.duration, this.textSize, this.mode = ClockDisplayMode.h12, this.msPrecision = 3});
 
-class _ClockDisplayState extends State<ClockDisplay> {
-  
+  final Duration duration;
+  final int? textSize;
+  final ClockDisplayMode mode;
+  final int msPrecision;
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+
+    //split the duration into days, hours, mins, seconds, miliseconds
+    int days = duration.inDays;
+    int hours = duration.inHours% (mode==ClockDisplayMode.h24?24:12);
+    if(mode==ClockDisplayMode.h12) {
+      hours = hours==0?12:hours;
+    }
+    int minutes = duration.inMinutes%60;
+    int seconds = duration.inSeconds%60;
+    int milliseconds = duration.inMilliseconds%1000;
+    return  Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+        //days
+        if(days != 0) Text("${days.toString().padLeft(2, '0')}:"),
+
+        //hours
+        if(days != 0 || hours != 0) Text("${hours.toString().padLeft(2, '0')}:"),
+        //mins
+        Text("${minutes.toString().padLeft(2, '0')}:"),
+        //seconds
+        Text(seconds.toString().padLeft(2, '0')),
+        //milliseconds
+        if(msPrecision !=0)Text( ".${milliseconds.toString().padLeft(3, '0').substring(0,min(msPrecision, 3))}"),
+
+        if(mode == ClockDisplayMode.h12) Text((duration.inHours%24)>=12?" PM":" AM")
+      ]);
   }
 }
