@@ -38,7 +38,7 @@
 //     countdownColor = widget.scTimer.color;
 //     // _startTimer();
 //     _loadCurrentDuration();
-    
+
 //   }
 
 //   // Initialize timers
@@ -60,7 +60,6 @@
 //         // Update local state with new ScTimer properties
 //         currentDuration = widget.scTimer.startingAt;
 //         countdownColor = widget.scTimer.color;
-        
 
 //         // Start or stop the timer based on ScTimer state
 //         if (widget.scTimer.running) {
@@ -86,7 +85,6 @@
 //     //     // Update local state with new ScTimer properties
 //     //     currentDuration = widget.scTimer.startingAt;
 //     //     countdownColor = widget.scTimer.color;
-        
 
 //     //     // Start or stop the timer based on ScTimer state
 //     //     if (widget.scTimer.running) {
@@ -118,7 +116,6 @@
 //       });
 //     }
 //   }
-
 
 //   void _loadCurrentDuration() {
 //      if (widget.scTimer.mode == TimerMode.stopwatch) {
@@ -178,14 +175,13 @@
 
 //   @override
 //   Widget build(BuildContext context) {
-//     return 
+//     return
 //     // Column(children: [
 //     //   //title / id
 
 //     //   FittedBox(
 //     //     fit: BoxFit.scaleDown,
 //     //     child: Text(widget.scTimer.id)),
-
 
 //       //timer
 //       Stack(
@@ -209,11 +205,9 @@
 //         ],
 //       );
 //     // ],);
-    
+
 //   }
 // }
-
-
 
 import 'dart:async';
 import 'dart:math';
@@ -238,7 +232,6 @@ class _TimerDisplayState extends State<TimerDisplay> {
   late Timer _timer;
   late Timer _flashTimer;
 
-
   // Assuming that 'preferences' box and "default_ms_precision" exist in your Hive DB
   int defaultMsPrecision = Hive.box('preferences').get("default_ms_precision", defaultValue: 1);
   int defaultFlashRate = Hive.box('preferences').get("default_countdown_flash_rate", defaultValue: 500);
@@ -253,18 +246,21 @@ class _TimerDisplayState extends State<TimerDisplay> {
     countdownColor = widget.scTimer.color;
     // _startTimer();
     // _loadCurrentDuration();
-    
   }
 
   // Initialize timers
   void _initTimers() {
     _timer = Timer.periodic(const Duration(milliseconds: 8), (_) => _handleTick());
-    _timer.cancel();
     _flashTimer = Timer.periodic(const Duration(seconds: 1), (_) => _handleDoneFlash());
-    _flashTimer.cancel();
+    if (widget.scTimer.running) {
+      _startTimer();
+    } else {
+      _timer.cancel();
+      _flashTimer.cancel();
+    }
   }
 
-    // Called whenever the widget configuration changes (e.g., the parent rebuilds it)
+  // Called whenever the widget configuration changes (e.g., the parent rebuilds it)
   @override
   void didUpdateWidget(covariant TimerDisplay oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -272,19 +268,18 @@ class _TimerDisplayState extends State<TimerDisplay> {
     // print("Checking if we need to update: ${widget.scTimer.id}");
 
     setState(() {
-        // Update local state with new ScTimer properties
-        // currentDuration = widget.scTimer.startingAt;
-        countdownColor = widget.scTimer.color;
-        
+      // Update local state with new ScTimer properties
+      // currentDuration = widget.scTimer.startingAt;
+      countdownColor = widget.scTimer.color;
 
-        // Start or stop the timer based on ScTimer state
-        if (widget.scTimer.running) {
-          _startTimer();
-        } else {
-          _timer.cancel();
-          _flashTimer.cancel();
-        }
-      });
+      // Start or stop the timer based on ScTimer state
+      if (widget.scTimer.running) {
+        _startTimer();
+      } else {
+        _timer.cancel();
+        _flashTimer.cancel();
+      }
+    });
 
     // Check if any relevant fields have changed
     // if (
@@ -301,7 +296,6 @@ class _TimerDisplayState extends State<TimerDisplay> {
     //     // Update local state with new ScTimer properties
     //     currentDuration = widget.scTimer.startingAt;
     //     countdownColor = widget.scTimer.color;
-        
 
     //     // Start or stop the timer based on ScTimer state
     //     if (widget.scTimer.running) {
@@ -323,14 +317,13 @@ class _TimerDisplayState extends State<TimerDisplay> {
           if (widget.scTimer.currentDuration == Duration.zero) {
             _timer.cancel();
             widget.scTimer.running = false;
-            
+
             _countdownDoneFlash();
           }
         }
       });
     }
   }
-
 
   // void _loadCurrentDuration() {
   //    if (widget.scTimer.mode == TimerMode.stopwatch) {
@@ -370,7 +363,8 @@ class _TimerDisplayState extends State<TimerDisplay> {
   // Flash the countdown clock when it reaches 0
   void _countdownDoneFlash() {
     _flashTimer.cancel();
-    _flashTimer = Timer.periodic(Duration(milliseconds: widget.scTimer.flashRate ?? defaultFlashRate), (_) => _handleDoneFlash());
+    _flashTimer =
+        Timer.periodic(Duration(milliseconds: widget.scTimer.flashRate ?? defaultFlashRate), (_) => _handleDoneFlash());
   }
 
   // Handle the flashing
@@ -390,37 +384,36 @@ class _TimerDisplayState extends State<TimerDisplay> {
 
   @override
   Widget build(BuildContext context) {
-    return 
-    // Column(children: [
-    //   //title / id
+    return
+        // Column(children: [
+        //   //title / id
 
-    //   FittedBox(
-    //     fit: BoxFit.scaleDown,
-    //     child: Text(widget.scTimer.id)),
+        //   FittedBox(
+        //     fit: BoxFit.scaleDown,
+        //     child: Text(widget.scTimer.id)),
 
-
-      //timer
-      Stack(
-        children: [
-          // Countdown bar
-          if (widget.scTimer.mode == TimerMode.countdown)
-            Positioned.fill(
-              left: 0,
-              child: FractionallySizedBox(
-                widthFactor: 1 - (widget.scTimer.currentDuration.inMilliseconds / widget.scTimer.initialStartingAt.inMilliseconds),
-                child: Container(color: countdownColor.withOpacity(0.4)),
-              ),
-            ),
-          Positioned(
-            child: ClockDisplay(
-              duration: widget.scTimer.currentDuration,
-              mode: ClockDisplayMode.h24,
-              msPrecision: widget.scTimer.msPrecision ?? defaultMsPrecision,
+        //timer
+        Stack(
+      children: [
+        // Countdown bar
+        if (widget.scTimer.mode == TimerMode.countdown)
+          Positioned.fill(
+            left: 0,
+            child: FractionallySizedBox(
+              widthFactor:widget.scTimer.initialStartingAt.inMilliseconds == 0 ? 0 :
+                  max(0,1 - (widget.scTimer.currentDuration.inMilliseconds / widget.scTimer.initialStartingAt.inMilliseconds)),
+              child: Container(color: countdownColor.withOpacity(0.4)),
             ),
           ),
-        ],
-      );
+        Positioned(
+          child: ClockDisplay(
+            duration: widget.scTimer.currentDuration,
+            mode: ClockDisplayMode.h24,
+            msPrecision: widget.scTimer.msPrecision ?? defaultMsPrecision,
+          ),
+        ),
+      ],
+    );
     // ],);
-    
   }
 }

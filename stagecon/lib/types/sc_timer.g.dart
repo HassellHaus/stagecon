@@ -17,7 +17,6 @@ class ScTimerAdapter extends TypeAdapter<ScTimer> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return ScTimer(
-      initialStartingAt: fields[1] as Duration,
       msPrecision: fields[8] as int?,
       flashRate: fields[9] as int?,
       mode: fields[2] as TimerMode,
@@ -26,6 +25,7 @@ class ScTimerAdapter extends TypeAdapter<ScTimer> {
       createdAt: fields[5] as DateTime?,
     )
       .._running = fields[0] as bool
+      .._initialStartingAt = fields[1] as Duration
       ..startingAt = fields[10] as Duration
       ..epochTime = fields[11] as DateTime
       ..expiresAt = fields[6] as DateTime?
@@ -39,7 +39,7 @@ class ScTimerAdapter extends TypeAdapter<ScTimer> {
       ..writeByte(0)
       ..write(obj._running)
       ..writeByte(1)
-      ..write(obj.initialStartingAt)
+      ..write(obj._initialStartingAt)
       ..writeByte(10)
       ..write(obj.startingAt)
       ..writeByte(2)
@@ -119,8 +119,7 @@ class TimerModeAdapter extends TypeAdapter<TimerMode> {
 ScTimer _$ScTimerFromJson(Map<String, dynamic> json) => ScTimer(
       initialStartingAt: json['initialStartingAt'] == null
           ? const Duration()
-          : const DurationConverter()
-              .fromJson(json['initialStartingAt'] as int),
+          : Duration(microseconds: json['initialStartingAt'] as int),
       msPrecision: json['msPrecision'] as int?,
       flashRate: json['flashRate'] as int?,
       mode: $enumDecodeNullable(_$TimerModeEnumMap, json['mode']) ??
@@ -144,8 +143,7 @@ ScTimer _$ScTimerFromJson(Map<String, dynamic> json) => ScTimer(
 
 Map<String, dynamic> _$ScTimerToJson(ScTimer instance) => <String, dynamic>{
       'running': instance._running,
-      'initialStartingAt':
-          const DurationConverter().toJson(instance.initialStartingAt),
+      'initialStartingAt': instance.initialStartingAt.inMicroseconds,
       'startingAt': const DurationConverter().toJson(instance.startingAt),
       'mode': _$TimerModeEnumMap[instance.mode]!,
       'color': const ColorConverter().toJson(instance.color),

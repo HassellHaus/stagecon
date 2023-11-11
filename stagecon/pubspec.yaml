@@ -54,6 +54,7 @@ dependencies:
   sliver_tools: ^0.2.12
   auto_size_text: ^3.0.0
   flutter_portal: ^1.1.4
+  dart_ms: ^0.0.5
   
   
   

@@ -1,8 +1,10 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:macos_ui/macos_ui.dart';
 import 'package:stagecon/types/sc_timer.dart';
 import 'package:stagecon/widgets/timers/timer_display.dart';
+import 'package:stagecon/widgets/timers/timer_editor.dart';
 
 class TimerItem extends StatelessWidget {
   const TimerItem({super.key, required this.timer});
@@ -49,7 +51,17 @@ class TimerItem extends StatelessWidget {
                               child: const Icon(CupertinoIcons.play_arrow_solid)))),
                           Flexible(child: FittedBox(child:_TimerItemButton(
                               hint: "Edit Timer",
-                              onPressed: () {
+                              onPressed: () async {
+
+                                await showMacosSheet(
+                                  barrierDismissible: true,
+                                  context: context, builder: (context) {
+                                  return MacosSheet(child: TimerEditor(timer: timer, editId: false,));
+                                });
+
+                                await timer.upsert();
+
+                                
                                 // timer.running = !timer.running;
                                 // timer.upsert();
                               },

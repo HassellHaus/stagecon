@@ -54,11 +54,16 @@ class ScTimer {
   }
   @HiveField(1)
   @DurationConverter()
-  Duration initialStartingAt;
+  late Duration _initialStartingAt;
+  Duration get initialStartingAt => _initialStartingAt;
+  set initialStartingAt(Duration value) {
+    _initialStartingAt = value;
+    startingAt = value;
+  }
 
   @HiveField(10)
   @DurationConverter()
-  late Duration startingAt = initialStartingAt; // this will change when the timer is paused and resumed
+  late Duration startingAt; // this will change when the timer is paused and resumed
   
   //calculates the current duration based on the epoch time
    Duration get currentDuration {
@@ -129,7 +134,7 @@ class ScTimer {
 
   ScTimer({
     bool running = false,
-    this.initialStartingAt = const Duration(),
+    Duration initialStartingAt = const Duration(),
     this.msPrecision,
     this.flashRate,
     this.mode = TimerMode.countdown,
@@ -142,7 +147,7 @@ class ScTimer {
       this.createdAt = createdAt ?? DateTime.timestamp();
       epochTime = this.createdAt;
       this.running = running;
-
+      _initialStartingAt = initialStartingAt;
     }
 
 

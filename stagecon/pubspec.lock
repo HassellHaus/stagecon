@@ -209,6 +209,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.5"
+  dart_ms:
+    dependency: "direct main"
+    description:
+      name: dart_ms
+      sha256: "888414775565af541a4d3ee0d8cc9bd7a688b5e21fd455be5ca7f213136fb6f7"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.5"
   dart_pubspec_licenses:
     dependency: transitive
     description:
@@ -958,5 +966,5 @@ packages:
     source: hosted
     version: "3.1.2"
 sdks:
-  dart: ">=3.1.0-185.0.dev <4.0.0"
+  dart: ">=3.1.0 <4.0.0"
   flutter: ">=3.10.0"
