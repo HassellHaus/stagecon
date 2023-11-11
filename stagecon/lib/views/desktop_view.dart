@@ -124,15 +124,9 @@ class _DesktopViewState extends State<DesktopView> {
                                       showLabel: false,
                                       icon: const MacosIcon(CupertinoIcons.add),
                                       // const MacosIcon(CupertinoIcons.circle_grid_3x3),
-                                      onPressed: () {
+                                      onPressed: () async {
                                         ScTimer timer = ScTimer();
-                                        timer.id = "New Timer";
-                                        timer.initialStartingAt = Duration.zero;
-                                        timer.mode = TimerMode.stopwatch;
-                                        // timer.initialStartingAt 
-                                        // timer.startingAt = ;
-                                        
-                                        timer.upsert();
+                                        await TimerEditor.openModel(context, timer: timer, editId: true, saveOnClose: false, showSaveButton: true, showTitle: true);
                         }),
 
                       // CustomToolbarItem(

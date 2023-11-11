@@ -1,7 +1,9 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:macos_ui/macos_ui.dart';
+import 'package:stagecon/controllers/app_state.dart';
 import 'package:stagecon/types/sc_timer.dart';
 import 'package:stagecon/widgets/timers/timer_display.dart';
 import 'package:stagecon/widgets/timers/timer_editor.dart';
@@ -13,6 +15,7 @@ class TimerItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppState appState = Get.find();
     return AnimatedContainer(
         padding: const EdgeInsets.all(15),
         decoration: BoxDecoration(border: Border.all(width: 3, color: timer.color)),
@@ -38,7 +41,8 @@ class TimerItem extends StatelessWidget {
                           child: FittedBox(child: TimerDisplay(
                         scTimer: timer,
                       ))),
-                      Spacer(),
+                      Obx(() => !appState.editMode.value? const SizedBox.shrink() :const Spacer()),
+                      Obx(() => !appState.editMode.value? const SizedBox.shrink() :
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
@@ -53,13 +57,7 @@ class TimerItem extends StatelessWidget {
                               hint: "Edit Timer",
                               onPressed: () async {
 
-                                await showMacosSheet(
-                                  barrierDismissible: true,
-                                  context: context, builder: (context) {
-                                  return MacosSheet(child: TimerEditor(timer: timer, editId: false,));
-                                });
-
-                                await timer.upsert();
+                                await TimerEditor.openModel(context, timer: timer, editId: false, saveOnClose: false, showSaveButton: true,);
 
                                 
                                 // timer.running = !timer.running;
@@ -81,7 +79,7 @@ class TimerItem extends StatelessWidget {
                               child: const Icon(CupertinoIcons.trash)))),
 
                         ],
-                      )
+                      ))
                     ])));
   }
 }

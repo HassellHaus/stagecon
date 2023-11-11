@@ -9,6 +9,61 @@ class TimerEditor extends StatefulWidget {
 
   final ScTimer timer;
   final bool editId;
+
+
+  static openModel(BuildContext context, {
+      required ScTimer timer, 
+      bool editId = true, 
+      bool saveOnClose = false, 
+      bool showSaveButton = false,
+      bool showTitle = true
+    }) async {
+    bool saving = false;
+    await showMacosSheet(
+      barrierDismissible: true,
+      context: context, builder: (context) {
+      return MacosSheet(child: SingleChildScrollView(
+        child: Column(children: [
+          const SizedBox(height: 24),
+
+          if(showTitle) const Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(CupertinoIcons.clock_fill, size: 50,),
+                Text("Edit Timer", style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
+              ],
+            ),
+
+          const SizedBox(height: 8),
+
+
+          TimerEditor(timer: timer, editId: editId,),
+
+          if(showSaveButton) StatefulBuilder(
+            builder: (BuildContext context, setState) {
+              return PushButton(
+                controlSize: ControlSize.large,
+                child: const Text("Save"),
+                onPressed: () async { 
+                  setState(() => saving = true);
+                  await timer.upsert();
+                  if(context.mounted) Navigator.of(context).pop();
+                },
+              );
+            },
+          ),
+          
+        ]),
+      ));
+      
+      
+    });
+    if(saveOnClose && !saving) {
+      await timer.upsert();
+
+    }
+    
+  }
   
 
 
@@ -58,20 +113,8 @@ class _TimerEditorState extends State<TimerEditor> {
     return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-          //title
-          CupertinoFormSection.insetGrouped(
-            backgroundColor: const Color(0x00000000),
-            children: [
-              if(widget.editId)
-              CupertinoTextFormFieldRow(
-                onChanged: (value) {
-                  setState(() {
-                    widget.timer.id = value;
-                  });
-                },
-              ),
 
-              //Kind Stopwatch/Countdown
+            //Kind Stopwatch/Countdown
               MacosSegmentedControl(
                 tabs: const [
                   MacosTab(label: "Countdown"),
@@ -79,6 +122,22 @@ class _TimerEditorState extends State<TimerEditor> {
                 ],
                 controller: tabController,
               ),
+              const SizedBox(height: 4),
+          //title
+          CupertinoFormSection.insetGrouped(
+            backgroundColor: const Color(0x00000000),
+            children: [
+              if(widget.editId)
+              CupertinoTextFormFieldRow(
+                placeholder: "Timer ID (Name)",
+                onChanged: (value) {
+                  setState(() {
+                    widget.timer.id = value;
+                  });
+                },
+              ),
+
+              
 
               //TODO: actual timer editor goes here
               
