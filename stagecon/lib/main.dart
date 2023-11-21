@@ -80,7 +80,9 @@ void main() async {
 
   //listen for changes in port info for the osc controller via hive and then re initalize it
 
-  var oscCon = Get.put(OSCcontroler());
+  var oscCon = Get.put(OSCcontroler(
+    port: preferences.get("osc_server_port", defaultValue: 4455)
+  ));
   Get.put(ProxyController());
   Get.put(AppState());
   // if(Platform.isWindows || Platform.isLinux || Platform.isMacOS) {

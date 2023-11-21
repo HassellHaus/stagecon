@@ -8,6 +8,7 @@ import 'package:macos_ui/macos_ui.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 import 'package:stagecon/views/AboutView.dart';
 import 'package:stagecon/views/OSCLogView.dart';
+import 'package:stagecon/widgets/network_info_list_section.dart';
 
 class ConfigurationView extends StatefulWidget {
   const ConfigurationView({super.key});
@@ -17,11 +18,11 @@ class ConfigurationView extends StatefulWidget {
 }
 
 class _ConfigurationViewState extends State<ConfigurationView> {
-  final info = NetworkInfo();
+  // final info = NetworkInfo();
   
-  late var expandableController = ExpandableController(initialExpanded: false);
-  // expandableController
-  late var deviceIP = NetworkInterface.list();
+  // late var expandableController = ExpandableController(initialExpanded: false);
+  // // expandableController
+  // late var deviceIP = NetworkInterface.list();
   // Future printIps() async {
   //   for (var interface in await NetworkInterface.list()) {
   //     print('== Interface: ${interface.name} ==');
@@ -125,71 +126,72 @@ class _ConfigurationViewState extends State<ConfigurationView> {
             ),
 
             //MARK: Network
-            CupertinoListSection.insetGrouped(
-              header: const Text("Network"),
+            const NetworkInfoListSection(),
+            // CupertinoListSection.insetGrouped(
+            //   header: const Text("Network"),
               
-              children: [
-                const CupertinoListTile.notched(title: Text("Port"), subtitle: Text("4455"),),
-                FutureBuilder(
-                  future: deviceIP,
-                  builder: (context, snapshot) {
-                  if(snapshot.hasError) {
+            //   children: [
+            //     const CupertinoListTile.notched(title: Text("Port"), subtitle: Text("4455"),),
+            //     FutureBuilder(
+            //       future: deviceIP,
+            //       builder: (context, snapshot) {
+            //       if(snapshot.hasError) {
 
-                    print(snapshot.error);
-                    return const CupertinoListTile.notched(title: Text("Device IP"), subtitle: Text("Error getting addresses "));
-                  }
+            //         print(snapshot.error);
+            //         return const CupertinoListTile.notched(title: Text("Device IP"), subtitle: Text("Error getting addresses "));
+            //       }
                   
-                  if(snapshot.hasData) {
+            //       if(snapshot.hasData) {
                     
                     
-                    List<Widget> featuredDeviceIps = [];
-                    List<Widget> otherDeviceIps = [];
+            //         List<Widget> featuredDeviceIps = [];
+            //         List<Widget> otherDeviceIps = [];
 
                     
-                    for(var interface in snapshot.data!) {
-                      for(var addr in interface.addresses) {
+            //         for(var interface in snapshot.data!) {
+            //           for(var addr in interface.addresses) {
                         
-                        if(interface.name == "en0" || interface.name == "wlan0") {
-                          featuredDeviceIps.add(CupertinoListTile.notched(title: const Text("Device IP"), subtitle: FittedBox( fit: BoxFit.scaleDown, child: Text(addr.address)), additionalInfo: Text(interface.name),));
-                        } else {
-                          otherDeviceIps.add(CupertinoListTile.notched(title: const Text("Device IP"), subtitle: FittedBox( fit: BoxFit.scaleDown, child: Text(addr.address)), additionalInfo: Text(interface.name),));
-                        }
-                        // deviceIps.add(CupertinoListTile.notched(title: const Text("Device IP"), subtitle: FittedBox( fit: BoxFit.scaleDown, child: Text(addr.address)), additionalInfo: Text(interface.name),));
-                      }
-                    }
-                    return Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: featuredDeviceIps,
-                      ),
-                      if(otherDeviceIps.isNotEmpty) Material(child: ExpandablePanel(
-                        header: CupertinoListTile.notched(title: const Text("View All"), onTap: () => expandableController.toggle()),
-                        collapsed: Container(),
-                        expanded: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: otherDeviceIps,
-                        ),
-                        controller: expandableController,
-                        theme: const ExpandableThemeData(
-                          tapHeaderToExpand: true,
-                          useInkWell: false,
-                        // controller: ExpandableController(),
-                      )
-                      ))
+            //             if(interface.name == "en0" || interface.name == "wlan0") {
+            //               featuredDeviceIps.add(CupertinoListTile.notched(title: const Text("Device IP"), subtitle: FittedBox( fit: BoxFit.scaleDown, child: Text(addr.address)), additionalInfo: Text(interface.name),));
+            //             } else {
+            //               otherDeviceIps.add(CupertinoListTile.notched(title: const Text("Device IP"), subtitle: FittedBox( fit: BoxFit.scaleDown, child: Text(addr.address)), additionalInfo: Text(interface.name),));
+            //             }
+            //             // deviceIps.add(CupertinoListTile.notched(title: const Text("Device IP"), subtitle: FittedBox( fit: BoxFit.scaleDown, child: Text(addr.address)), additionalInfo: Text(interface.name),));
+            //           }
+            //         }
+            //         return Column(
+            //           mainAxisSize: MainAxisSize.min,
+            //           children: [
+            //             Column(
+            //             mainAxisSize: MainAxisSize.min,
+            //             children: featuredDeviceIps,
+            //           ),
+            //           if(otherDeviceIps.isNotEmpty) Material(child: ExpandablePanel(
+            //             header: CupertinoListTile.notched(title: const Text("View All"), onTap: () => expandableController.toggle()),
+            //             collapsed: Container(),
+            //             expanded: Column(
+            //               mainAxisSize: MainAxisSize.min,
+            //               children: otherDeviceIps,
+            //             ),
+            //             controller: expandableController,
+            //             theme: const ExpandableThemeData(
+            //               tapHeaderToExpand: true,
+            //               useInkWell: false,
+            //             // controller: ExpandableController(),
+            //           )
+            //           ))
 
-                      ],
-                    );
-                  } else {
-                    return const CupertinoListTile.notched(title: Text("Device IP"), subtitle: Text("Finding IP"));
-                  }
-                }),
+            //           ],
+            //         );
+            //       } else {
+            //         return const CupertinoListTile.notched(title: Text("Device IP"), subtitle: Text("Finding IP"));
+            //       }
+            //     }),
                 
 
                 
-              ],
-            ),
+            //   ],
+            // ),
             //MARK: Debug
             CupertinoListSection.insetGrouped(
               header: const Text("Tools"),

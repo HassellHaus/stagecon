@@ -231,6 +231,7 @@ class _DesktopViewState extends State<DesktopView> {
                         ],
                       ),
                       children: [
+                        
                         ContentArea(builder: (context, scroll) {
                           return IndexedStack(
                             index: pageIndex,
@@ -246,7 +247,15 @@ class _DesktopViewState extends State<DesktopView> {
                           // Hive.box("preferences").put("full_screen_mode", true);
                           // });
                         },
+
+                        
                       ),
+                      // ResizablePane(
+                      //   startSize: 300,
+                      //   minSize: 100,
+                      //   resizableSide: ResizableSide.top, builder: (context, scrollController) {
+                      //   return const TimerGrid();
+                      // },)
                       // if (mediaQueryData.size.width > 556.0)
                       //   ToolBarIconButton(
                       //     label: "Show Right Sidebar",

@@ -6,6 +6,7 @@ import 'package:macos_ui/macos_ui.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 import 'package:stagecon/server_proxy/proxy_controller.dart';
 import 'package:stagecon/server_proxy/server.dart';
+import 'package:stagecon/widgets/network_info_list_section.dart';
 import 'package:stagecon/widgets/server_proxy/proxy_activity_indicator.dart';
 
 class ProxyOptionsSlivers extends StatefulWidget {
@@ -151,10 +152,14 @@ class _ProxyOptionsSliversState extends State<ProxyOptionsSlivers> {
                       ),
                     ],
                   );
-                }))
+                })),
 
         //proxy server port
         //list connected clients
+
+
+        //network info 
+        const NetworkInfoListSection()
       ],
     );
   }
