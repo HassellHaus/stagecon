@@ -34,9 +34,10 @@ class CueLightIntractable extends StatelessWidget {
         cueLight.upsert();
       },
 
-      onTapUp: (details) {
+      onTapUp: (details) async {
         print("Released Cuelight: ${cueLight.id} ");
         if(cueLight.state == CueLightState.active && !cueLight.toggleActive) {
+          await Future.delayed(Duration(milliseconds: 200));
           cueLight.state = CueLightState.inactive;
           cueLight.upsert();
         }

@@ -125,6 +125,14 @@ class ScProxyClient {
         // channel.sink.add('received!');
         print(message);
         // channel.sink.close(status.goingAway);
+      }, onError: (e) {
+        print("Websocket Error: $e");
+        isConnected.value = false;
+        reconnect(wsUrl: wsUrl);
+      }, onDone: () {
+        print("Websocket Done");
+        isConnected.value = false;
+        reconnect(wsUrl: wsUrl);
       });
     }
 

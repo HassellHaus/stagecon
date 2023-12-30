@@ -24,7 +24,7 @@ class ScSocketContainer {
   HttpConnectionInfo? connectionInfo;
   WebSocketChannel socket;
   DateTime lastPing = DateTime.now();
-  bool get healthy => lastPing.difference(DateTime.now()).inMinutes < clientPingGracePeriod;
+  bool get healthy => DateTime.now().difference(lastPing).inMinutes < clientPingGracePeriod;
   ScSocketContainer(this.socket, {this.connectionInfo});
 }
 
@@ -118,12 +118,20 @@ class ScProxyServer {
             // update last pinged time
             for(var socket in sockets.value) {
               if(socket.socket == webSocket) {
+                print(socket.socket);
                 socket.lastPing = DateTime.now();
               }
             }
           }
           // webSocket.sink.add("echo $message");
-        });
+        }, 
+          onDone: () {
+            print("Removing Closed Websocket.  Previous Length: ${sockets.value.length}");
+            sockets.removeSocket(webSocket);
+            print("New Length: ${sockets.value.length}");
+            return;
+          },
+        );
       })(request);
     }
 
@@ -138,7 +146,7 @@ class ScProxyServer {
     
 
     
-
+    
     ///Ping every minute
     pingTimer = Timer.periodic(const Duration(minutes: 1), (timer) {
       pingAll();
@@ -155,7 +163,7 @@ class ScProxyServer {
   }
 
   onTimerEvent(BoxEvent event) {
-    for(var socket in sockets!.value) {
+    for(var socket in sockets.value) {
       socket.socket.sink.add(jsonEncode(ServerMessage(
         target: event.key,
         method: event.deleted ? ServerMessageMethod.delete : ServerMessageMethod.upsert,
@@ -166,7 +174,7 @@ class ScProxyServer {
   }
 
   onMessageEvent(BoxEvent event) {
-    for(var socket in sockets!.value) {
+    for(var socket in sockets.value) {
       socket.socket.sink.add(jsonEncode(ServerMessage(
         target: event.key,
         method: event.deleted ? ServerMessageMethod.delete : ServerMessageMethod.upsert,
@@ -177,7 +185,7 @@ class ScProxyServer {
   }
 
   onCueLightEvent(BoxEvent event) {
-    for(var socket in sockets!.value) {
+    for(var socket in sockets.value) {
       socket.socket.sink.add(jsonEncode(ServerMessage(
         target: event.key,
         method: event.deleted ? ServerMessageMethod.delete : ServerMessageMethod.upsert,
@@ -189,18 +197,19 @@ class ScProxyServer {
 
   /// Pings all sockets.
   pingAll() {
-
+    print("Pinging all ${sockets.value.length} sockets");
     //remove and close sockets not returning pings for 10 minutes
-    for(var socket in sockets!.value) {
+    for(var socket in sockets.value) {
+      print("Last Ping: ${socket.lastPing}");
       if(!socket.healthy) {
         socket.socket.sink.close();
         socket.socket.stream.drain();
-        sockets!.remove(socket);
+        sockets.remove(socket);
       }
     }
 
     //Ping every socket
-    for(var socket in sockets!.value) {
+    for(var socket in sockets.value) {
       socket.socket.sink.add("ping");
     }
   }
@@ -228,32 +237,3 @@ class ScProxyServer {
     sockets.dispose();
   }
 }
-//     // var handler =
-//     //     const Pipeline().addMiddleware(logRequests()).addHandler(() {
-//     //       return;
-//     //     });
-
-//     // var server = await shelf_io.serve(handler, 'localhost', 8080);
-
-//     // // Enable content compression
-//     // server.autoCompress = true;
-
-
-
-//     // print('Serving at http://${server.address.host}:${server.port}');
-
-//     var preferences = await Hive.box('preferences');
-
-//     var handler = SseHandler(Uri.parse('/osc'));
-//     await shelf_io.serve(handler.handler, 'localhost', preferences.get("server_port"));
-//     var connections = handler.connections;
-//     // connections.
-//     while (await connections.hasNext) {
-//       var connection = await connections.next;
-//       // connection.
-//       connection.sink.add('foo');
-//       connection.stream.listen(print);
-//     }
-
-//   }
-// }

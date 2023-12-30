@@ -234,13 +234,13 @@ class _DesktopViewState extends State<DesktopView> {
                       children: [
 
                         if(pageIndex == 0)
-                          ContentArea(builder: (context, scroll) => _PageContainer(child: const TimerGrid(),)),
+                          ContentArea(builder: (context, scroll) => const _PageContainer(child: const TimerGrid(),)),
                         if(pageIndex == 1)
-                          ContentArea(builder: (context, scroll) => _PageContainer(child: CustomScrollView(controller: scroll, slivers: const [ProxyOptionsSlivers(),],),)),
+                          ContentArea(builder: (context, scroll) => CustomScrollView(controller: scroll, slivers: const [ProxyOptionsSlivers(),],),),
                         if(pageIndex == 2)
-                          ContentArea(builder: (context, scroll) => _PageContainer(child: CustomScrollView(controller: scroll, slivers: const [OSCOptionsSlivers(),],),)),
+                          ContentArea(builder: (context, scroll) => CustomScrollView(controller: scroll, slivers: const [OSCOptionsSlivers(),],),),
                         if(pageIndex == 3)
-                          ContentArea(builder: (context, scroll) => _PageContainer(child: const PreferencesView())),
+                          ContentArea(builder: (context, scroll) => const PreferencesView()),
 
                         
                         

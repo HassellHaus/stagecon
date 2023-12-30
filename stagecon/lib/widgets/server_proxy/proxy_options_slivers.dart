@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -73,7 +74,9 @@ class _ProxyOptionsSliversState extends State<ProxyOptionsSlivers> {
                         child: 
                                MacosTextField(
                                 controller: proxyClientIp,
-                                keyboardType: TextInputType.number,
+                                // keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r"[0-9.:]+"))],
+                                
                                 // prefix: Text("Server IP"),
                                 onChanged: (value) {
                                   box.put("proxy_client_ip", value);
@@ -88,6 +91,7 @@ class _ProxyOptionsSliversState extends State<ProxyOptionsSlivers> {
                                 controller: proxyClientPort,
                                 keyboardType: TextInputType.number,
                                 // prefix: Text("Server IP"),
+                                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                                 onChanged: (value) {
                                   box.put("proxy_client_port", int.tryParse(value));
                                 },
@@ -144,6 +148,7 @@ class _ProxyOptionsSliversState extends State<ProxyOptionsSlivers> {
                                 controller: proxyServerPort,
                                 keyboardType: TextInputType.number,
                                 // prefix: Text("Server IP"),
+                                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                                 onChanged: (value) {
                                   box.put("proxy_server_port", int.tryParse(value));
                                 },
