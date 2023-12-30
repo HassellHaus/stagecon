@@ -42,8 +42,23 @@ class TimerGrid extends StatelessWidget {
             children: timers.values
                 .map((e) => TimerItem(
                       timer: e,
-                    ))
-                .toList());
+                ))
+                .toList()
+                ..sort((a, b) {
+                  //if the timer is a stopwatch it should be sorted first with the newest first
+                  //if the timer is a countdown it should be sorted after stopwatches but sorted with the shortest remaining time first
+                  if (a.timer.mode == TimerMode.stopwatch && a.timer.mode != TimerMode.stopwatch) {
+                    return -1;
+                  } else if (a.timer.mode != TimerMode.stopwatch && b.timer.mode == TimerMode.stopwatch) {
+                    return 1;
+                  } else if (a.timer.mode == TimerMode.stopwatch && b.timer.mode == TimerMode.stopwatch) {
+                    return b.timer.currentDuration.compareTo(a.timer.currentDuration);
+                  } else {
+                    return a.timer.currentDuration.compareTo(b.timer.currentDuration);
+                  }
+
+                })
+                );
       });
 
     });

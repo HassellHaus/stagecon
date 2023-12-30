@@ -11,6 +11,7 @@ import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as shelf_io;
 import 'package:shelf_web_socket/shelf_web_socket.dart';
 import 'package:stagecon/controllers/OscController.dart';
+import 'package:stagecon/types/sc_cuelight.dart';
 import 'package:stagecon/types/sc_message.dart';
 import 'package:stagecon/types/sc_timer.dart';
 import 'package:stagecon/types/server_message.dart';
@@ -81,6 +82,7 @@ class ScProxyServer {
   ServerProxyServerSockets sockets = ServerProxyServerSockets();
 
   StreamSubscription<BoxEvent>? messageSubscription;
+  StreamSubscription<BoxEvent>? cueLightSubscription;
   StreamSubscription<BoxEvent>? timerSubscription;
 
   ValueNotifier<bool> isServing = ValueNotifier(false);
@@ -145,6 +147,7 @@ class ScProxyServer {
     //listen for timer events from hive
     timerSubscription = Hive.box<ScTimer>("timers").watch().listen(onTimerEvent);
     // messageSubscription = Hive.box<ScMessage>("messages").watch().listen(onTimerEvent);
+    cueLightSubscription = Hive.box<ScCueLight>("cuelights").watch().listen(onCueLightEvent);
 
 
     // oscCon.addTimerEventListener(onTimerEvent);
@@ -172,6 +175,18 @@ class ScProxyServer {
       ).toJson()));
     }
   }
+
+  onCueLightEvent(BoxEvent event) {
+    for(var socket in sockets!.value) {
+      socket.socket.sink.add(jsonEncode(ServerMessage(
+        target: event.key,
+        method: event.deleted ? ServerMessageMethod.delete : ServerMessageMethod.upsert,
+        data: event.deleted ? null : (event.value as ScCueLight).toJson(),
+        dataType: ServerMessageDataType.cuelight
+      ).toJson()));
+    }
+  }
+
   /// Pings all sockets.
   pingAll() {
 
@@ -197,6 +212,7 @@ class ScProxyServer {
     pingTimer?.cancel();
     timerSubscription?.cancel();
     messageSubscription?.cancel();
+    cueLightSubscription?.cancel();
     server?.close(force: true);
     sockets.closeAll();
   }

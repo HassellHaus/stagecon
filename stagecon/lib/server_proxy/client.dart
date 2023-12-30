@@ -20,6 +20,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stagecon/controllers/OscController.dart';
+import 'package:stagecon/types/sc_cuelight.dart';
 import 'package:stagecon/types/sc_timer.dart';
 import 'package:stagecon/types/server_message.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -104,6 +105,18 @@ class ScProxyClient {
           //     ScMessage.delete(serverMessage.target);
           //   }
           // }
+
+          //MARK: Cuelights
+          if(serverMessage.dataType == ServerMessageDataType.cuelight) {
+            // serverMessage.timerEvent.
+            if(serverMessage.method == ServerMessageMethod.upsert) {
+              //convert to object
+              var cuelight = ScCueLight.fromJson(serverMessage.data!);
+              cuelight.upsert();
+            } else if(serverMessage.method == ServerMessageMethod.delete) {
+              ScCueLight.delete(serverMessage.target);
+            }
+          }
 
         } catch (e) {
           print(e);

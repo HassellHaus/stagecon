@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:stagecon/views/OSCLogView.dart';
+import 'package:stagecon/widgets/cue_lights/cue_light_grid.dart';
 
 class SidebarView extends StatefulWidget {
   const SidebarView({super.key});
@@ -10,7 +11,7 @@ class SidebarView extends StatefulWidget {
 }
 
 class _SidebarViewState extends State<SidebarView> {
-  MacosTabController _tabController = MacosTabController(initialIndex: 0, length: 2);
+  MacosTabController _tabController = MacosTabController(initialIndex: 0, length: 3);
 
   @override
   void dispose() {
@@ -26,11 +27,13 @@ class _SidebarViewState extends State<SidebarView> {
       controller: _tabController,
       tabs: const [
         MacosTab(label: "Message Log"),
-        MacosTab(label: "OSC Log")
+        MacosTab(label: "OSC Log"),
+        MacosTab(label: "Cue Lights")
       ],
       children: const [
         Center(child: Text("Message Log")),
-        OSCLogView()
+        OSCLogView(),
+        CueLightGrid()
       ],
     ));
   }

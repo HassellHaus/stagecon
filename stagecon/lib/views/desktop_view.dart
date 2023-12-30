@@ -10,6 +10,7 @@ import 'package:stagecon/views/ConfigurationView.dart';
 import 'package:stagecon/views/OSCLogView.dart';
 import 'package:stagecon/views/preferences_view.dart';
 import 'package:stagecon/views/sidebar_view.dart';
+import 'package:stagecon/widgets/cue_lights/cue_light_grid.dart';
 import 'package:stagecon/widgets/overlay_container.dart';
 import 'package:stagecon/widgets/server_proxy/proxy_activity_indicator.dart';
 import 'package:stagecon/widgets/server_proxy/proxy_options_slivers.dart';
@@ -231,25 +232,32 @@ class _DesktopViewState extends State<DesktopView> {
                         ],
                       ),
                       children: [
+
+                        if(pageIndex == 0)
+                          ContentArea(builder: (context, scroll) => _PageContainer(child: const TimerGrid(),)),
+                        if(pageIndex == 1)
+                          ContentArea(builder: (context, scroll) => _PageContainer(child: CustomScrollView(controller: scroll, slivers: const [ProxyOptionsSlivers(),],),)),
+                        if(pageIndex == 2)
+                          ContentArea(builder: (context, scroll) => _PageContainer(child: CustomScrollView(controller: scroll, slivers: const [OSCOptionsSlivers(),],),)),
+                        if(pageIndex == 3)
+                          ContentArea(builder: (context, scroll) => _PageContainer(child: const PreferencesView())),
+
                         
-                        ContentArea(builder: (context, scroll) {
-                          return IndexedStack(
-                            index: pageIndex,
-                            children: [
-                              const TimerGrid(),
-                              CustomScrollView(controller: scroll, slivers: const [ProxyOptionsSlivers(),],),
-                              CustomScrollView(controller: scroll, slivers: const [OSCOptionsSlivers(),],),
-                            //  Center(child: DurationEditor(duration: Duration(seconds: 10),)), 
-                             const PreferencesView()
-                             ],
-                          );
+                        
+                        // ContentArea(builder: (context, scroll) {
+                        //   return IndexedStack(
+                        //     index: pageIndex,
+                        //     children: [
+                              
+                        //      ],
+                        //   );
 
                           // Hive.box("preferences").put("full_screen_mode", true);
                           // });
-                        },
+                        // },
 
                         
-                      ),
+                      // ),
                       // ResizablePane(
                       //   startSize: 300,
                       //   minSize: 100,
@@ -292,5 +300,58 @@ class _DesktopViewState extends State<DesktopView> {
                 // )),
       ),
     ));
+  }
+}
+
+
+/// Holds the page content and the bottom resizable pane
+class _PageContainer extends StatelessWidget {
+  const _PageContainer({super.key, required this.child});
+
+  // final Widget Function(BuildContext context, ScrollController scrollController) builder;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    AppState appState = Get.find();
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+      Flexible(
+                  fit: FlexFit.loose,
+                  child: child,
+      ),
+      
+      ResizablePane(
+          startSize: 300,
+
+          minSize: 100,
+          resizableSide: ResizableSide.top, builder: (context, scrollController) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                //Bottom tool bar
+                Container(
+                  height: 30,
+                  color: MacosTheme.of(context).dividerColor,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      // CupertinoButton(child: MacosIcon(), onPressed: onPressed)
+                      MacosIconButton(icon: MacosIcon(CupertinoIcons.lightbulb_fill), onPressed: () {
+                        appState.bottomPanelOpen.value = !appState.bottomPanelOpen.value;
+                      },)
+                    ],
+                  ),
+                ),
+
+                const CueLightGrid(),
+              ],
+            );
+            
+          // return const CueLightGrid();
+        },)
+    ],);
   }
 }

@@ -30,4 +30,5 @@ const _$ServerMessageMethodEnumMap = {
 const _$ServerMessageDataTypeEnumMap = {
   ServerMessageDataType.timer: 'timer',
   ServerMessageDataType.message: 'message',
+  ServerMessageDataType.cuelight: 'cuelight',
 };

@@ -1,5 +1,8 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:hive/hive.dart';
+import 'package:stagecon/widgets/cue_lights/cue_light_grid.dart';
 import 'package:stagecon/widgets/timers/timer_grid.dart';
 
 class FullScreenView extends StatelessWidget {
@@ -15,7 +18,23 @@ class FullScreenView extends StatelessWidget {
       },
       child: Container(
         color: CupertinoColors.black,
-        child: const TimerGrid(),
+        child: LayoutBuilder(builder: (_, constraints) { 
+          
+          return Column(
+          children: [
+            Expanded(child: TimerGrid()),
+            
+             SizedBox(
+                height: max(100,constraints.maxHeight*0.1,),
+                child: CueLightGrid(hideInactive: true),
+              )
+            
+          ],
+        );
+        })
+        
+        // const TimerGrid(),
+        
       ),
     ));
   }

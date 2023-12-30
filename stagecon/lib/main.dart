@@ -12,8 +12,20 @@ import 'package:stagecon/server_proxy/client.dart';
 import 'package:stagecon/server_proxy/proxy_controller.dart';
 import 'package:stagecon/server_proxy/server.dart';
 import 'package:stagecon/type_converters.dart';
+import 'package:stagecon/types/sc_cuelight.dart';
 import 'package:stagecon/types/sc_timer.dart';
 import 'package:stagecon/views/main_view.dart';
+
+void _createStarterCuelights() async  {
+    await ScCueLight(id: "red", name: "Red", color: Colors.red, state: CueLightState.inactive).upsert();
+    await ScCueLight(id: "green", name: "Green", color: Colors.green, state: CueLightState.inactive).upsert();
+    await ScCueLight(id: "blue", name: "Blue", color: Colors.blue, state: CueLightState.inactive).upsert();
+    await ScCueLight(id: "yellow", name: "Yellow", color: Colors.yellow, state: CueLightState.inactive).upsert();
+    await ScCueLight(id: "purple", name: "Purple", color: Colors.purple, state: CueLightState.inactive).upsert();
+    await ScCueLight(id: "orange", name: "Orange", color: Colors.orange, state: CueLightState.inactive).upsert();
+    await ScCueLight(id: "teal", name: "Teal", color: Colors.teal, state: CueLightState.inactive).upsert();
+    await ScCueLight(id: "brown", name: "Brown", color: Colors.brown, state: CueLightState.inactive).upsert();
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,10 +40,18 @@ void main() async {
   Hive.registerAdapter(TimerModeAdapter());
   Hive.registerAdapter(HiveDurationAdapter());
   Hive.registerAdapter(HiveColorAdapter());
+  Hive.registerAdapter(ScCueLightAdapter());
+  Hive.registerAdapter(CueLightStateAdapter());
 
   var timerBox = await Hive.openBox<ScTimer>('timers');
+  var cuelightBox = await Hive.openBox<ScCueLight>('cuelights');
   var messageBox = await Hive.openBox('messages');
   var preferences = await Hive.openBox('preferences');
+// cuelightBox.clear();
+  if(cuelightBox.isEmpty) {
+    _createStarterCuelights();
+  }
+
   //set defaults
   if (!preferences.containsKey("osc_server_port")) {
     preferences.put("osc_server_port", 4455); // in OSC screen

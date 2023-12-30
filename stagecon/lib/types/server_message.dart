@@ -4,7 +4,8 @@ part 'server_message.g.dart';
 
 enum ServerMessageDataType {
   timer,
-  message
+  message,
+  cuelight
 }
 enum ServerMessageMethod {
   upsert,

@@ -13,7 +13,7 @@ import '../widgets/MessageOverlay.dart';
 
 // typedef TimerEventCallback = Function(TimerEventOptions);
 typedef OSCLogEventCallback = Function(OSCMessage);
-typedef MessageEventCallback = Function(MessageEvent);
+// typedef MessageEventCallback = Function(MessageEvent);
 
 
 
