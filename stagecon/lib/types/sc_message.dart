@@ -1,3 +1,5 @@
+import 'package:hive/hive.dart';
+import 'package:stagecon/types/sc_cuelight.dart';
 import 'package:uuid/uuid.dart';
 
 
@@ -7,34 +9,48 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'sc_message.g.dart';
 
+var _messageBox = Hive.box<ScMessage>("messages");
+var _preferencesBox = Hive.box("preferences");
+
+@HiveType(typeId: 7)
 @JsonSerializable()
 class ScMessage {
-  
-
-  final Duration ttl;
-  String title;
-  String? content;
-
-
+  @HiveField(0)
   late String id;
 
+  @HiveField(1)
+  String title;
 
+  @HiveField(2)
+  String? content;
+
+  @HiveField(3)
+  final Duration ttl;
+
+
+  @HiveField(4)
   late DateTime createdAt;
+
+  @HiveField(5)
+  String? senderName;
+
+  @HiveField(6)
+  String? senderDeviceId;
   
   
 
-  @JsonKey(includeFromJson: false, includeToJson: true)
-  DateTime? get  expiresAt { // expire after 10 minutes + ttl
-    return createdAt.add(Duration(minutes: 10, seconds:  ttl.inSeconds));
-  }
+  // @JsonKey(includeFromJson: false, includeToJson: true)
+  // DateTime? get  expiresAt { // expire after 10 minutes + ttl
+  //   return createdAt.add(Duration(minutes: 10, seconds:  ttl.inSeconds));
+  // }
 
 
-  set expiresAt(DateTime? value) => { };
+  // set expiresAt(DateTime? value) => { };
 
 
   
 
-  bool get expired => expiresAt != null && DateTime.now().isAfter(expiresAt!);
+  // bool get expired => expiresAt != null && DateTime.now().isAfter(expiresAt!);
 
 
   final String type = "message";
@@ -43,9 +59,15 @@ class ScMessage {
     required this.title,
     this.content,
     this.ttl = const Duration(seconds: 5),
+    String? senderName,
+    String? senderDeviceId,
     String? id, DateTime? createdAt}) {
       this.id = id ?? const Uuid().v4();
       this.createdAt = createdAt ?? DateTime.timestamp();
+
+      this.senderName = senderName ?? _preferencesBox.get("name");
+      this.senderDeviceId = senderDeviceId ?? _preferencesBox.get("device_id");
+
 
     }
 
@@ -65,4 +87,23 @@ class ScMessage {
   //   title = event.title;
   //   content = event.content;
   // }
+
+
+  Future<void> upsert() async {
+    await _messageBox.put(id, this);
+    // notifyListeners();
+    
+  }
+
+  static ScMessage? get(String id) {
+    return _messageBox.get(id);
+  }
+
+  static void delete(String id) {
+    _messageBox.delete(id);
+  }
+
+  static void deleteAll() {
+    _messageBox.clear();
+  }
 }

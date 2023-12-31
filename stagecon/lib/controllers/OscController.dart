@@ -6,7 +6,6 @@ import 'package:hive/hive.dart';
 
 import 'package:stagecon/osc/osc.dart';
 import 'package:stagecon/types/sc_timer.dart';
-import 'package:stagecon/types/message_event.dart';
 
 
 import '../widgets/MessageOverlay.dart';

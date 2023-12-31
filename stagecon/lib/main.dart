@@ -13,8 +13,10 @@ import 'package:stagecon/server_proxy/proxy_controller.dart';
 import 'package:stagecon/server_proxy/server.dart';
 import 'package:stagecon/type_converters.dart';
 import 'package:stagecon/types/sc_cuelight.dart';
+import 'package:stagecon/types/sc_message.dart';
 import 'package:stagecon/types/sc_timer.dart';
 import 'package:stagecon/views/main_view.dart';
+import 'package:uuid/uuid.dart';
 
 void _createStarterCuelights() async  {
     await ScCueLight(id: "red", name: "Red", color: Colors.red, state: CueLightState.inactive).upsert();
@@ -42,11 +44,12 @@ void main() async {
   Hive.registerAdapter(HiveColorAdapter());
   Hive.registerAdapter(ScCueLightAdapter());
   Hive.registerAdapter(CueLightStateAdapter());
+  Hive.registerAdapter(ScMessageAdapter());
 
+  var preferences = await Hive.openBox('preferences');
   var timerBox = await Hive.openBox<ScTimer>('timers');
   var cuelightBox = await Hive.openBox<ScCueLight>('cuelights');
-  var messageBox = await Hive.openBox('messages');
-  var preferences = await Hive.openBox('preferences');
+  var messageBox = await Hive.openBox<ScMessage>('messages');
 // cuelightBox.clear();
   if(cuelightBox.isEmpty) {
     _createStarterCuelights();
@@ -96,6 +99,11 @@ void main() async {
   }
   if (!preferences.containsKey("full_screen_mode")) {
     preferences.put("full_screen_mode", false);
+  }
+
+  //misc 
+  if (!preferences.containsKey("device_id")) {
+    preferences.put("device_id", const Uuid().v4()); 
   }
 
   //listen for changes in port info for the osc controller via hive and then re initalize it
