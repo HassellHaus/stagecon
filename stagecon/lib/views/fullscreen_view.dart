@@ -8,7 +8,9 @@ import 'package:stagecon/widgets/cue_lights/cue_light_grid.dart';
 import 'package:stagecon/widgets/timers/timer_grid.dart';
 
 class FullScreenView extends StatelessWidget {
-  const FullScreenView({super.key});
+  const FullScreenView({super.key, this.tapToClose = false});
+
+  final bool tapToClose;
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +18,9 @@ class FullScreenView extends StatelessWidget {
     GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () {
-        Hive.box("preferences").put("full_screen_mode", false);
+        if(tapToClose) {
+          Hive.box("preferences").put("full_screen_mode", false);
+        }
       },
       child: Container(
         color: CupertinoColors.black,

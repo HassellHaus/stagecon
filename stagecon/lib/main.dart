@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'dart:io';
 
+// import 'package:desktop_multi_window/desktop_multi_window.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
@@ -15,6 +17,7 @@ import 'package:stagecon/type_converters.dart';
 import 'package:stagecon/types/sc_cuelight.dart';
 import 'package:stagecon/types/sc_message.dart';
 import 'package:stagecon/types/sc_timer.dart';
+import 'package:stagecon/views/fullscreen_view.dart';
 import 'package:stagecon/views/main_view.dart';
 import 'package:uuid/uuid.dart';
 
@@ -29,7 +32,20 @@ void _createStarterCuelights() async  {
     await ScCueLight(id: "brown", name: "Brown", color: Colors.brown, state: CueLightState.inactive).upsert();
 }
 
-void main() async {
+void main(List<String> args) async {
+  print(args);
+  // if (args.firstOrNull == 'multi_window') {
+  //   final windowId = int.parse(args[1]);
+  //   final argument = args[2].isEmpty
+  //       ? const {} as Map<String, dynamic>
+  //       : jsonDecode(args[2]) as Map<String, dynamic>;
+  //   runApp(FullScreenSubWindowApp(
+  //     windowController: WindowController.fromWindowId(windowId),
+  //     args: argument,
+  //   ));
+  //   return;
+  // } 
+
   WidgetsFlutterBinding.ensureInitialized();
   if (Platform.isMacOS) {
     _configureMacosWindowUtils();
@@ -123,8 +139,38 @@ void main() async {
 
   // }
 
+  
+  
+  
   runApp(const MyApp());
+  
+
+
+  
 }
+
+
+// class FullScreenSubWindowApp extends StatelessWidget {
+//   const FullScreenSubWindowApp({
+//     Key? key,
+//     required this.windowController,
+//     required this.args,
+//   }) : super(key: key);
+
+//   final WindowController windowController;
+//   final Map<String, dynamic> args;
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return MacosApp(
+//       theme: MacosThemeData.light(),
+//       home: MacosWindow(
+        
+//         child: FullScreenView(tapToClose: false,)
+//       ),
+//     );
+//   }
+// }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

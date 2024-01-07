@@ -30,7 +30,7 @@ class _MainViewState extends State<MainView> {
     return ValueListenableBuilder(valueListenable: Hive.box("preferences").listenable(keys: ["full_screen_mode"]),
     builder: (context, box, child) {
       if(box.get("full_screen_mode")) {
-        return const FullScreenView();
+        return const FullScreenView(tapToClose: true,);
       } else {
         if(Platform.isIOS || Platform.isAndroid) {
           return CupertinoPageScaffold(

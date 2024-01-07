@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 import 'package:get/get.dart';
@@ -5,6 +7,7 @@ import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:stagecon/controllers/app_state.dart';
+import 'package:stagecon/multi_window.dart';
 import 'package:stagecon/types/sc_timer.dart';
 import 'package:stagecon/views/ConfigurationView.dart';
 import 'package:stagecon/views/OSCLogView.dart';
@@ -181,6 +184,11 @@ class _DesktopViewState extends State<DesktopView> {
                         showLabel: false,
                         icon: const MacosIcon(CupertinoIcons.fullscreen),
                         onPressed: () {
+                          //open multiwindow
+                          // if(Platform.isLinux || Platform.isMacOS || Platform.isWindows) {
+                          //   openFullscreenViewWindow();
+                          //   return;
+                          // }
                           // setState(() {
                           //ask the user if they want to enter fuillscreen mode
                           showMacosAlertDialog(

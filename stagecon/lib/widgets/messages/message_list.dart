@@ -5,7 +5,9 @@ import 'package:stagecon/types/sc_message.dart';
 import 'package:stagecon/widgets/messages/message_item.dart';
 
 class MessageList extends StatefulWidget {
-  const MessageList({super.key});
+  const MessageList({super.key, this.onlyShowNew = false});
+
+  final bool onlyShowNew;
 
   @override
   State<MessageList> createState() => _MessageListState();
@@ -15,6 +17,8 @@ class _MessageListState extends State<MessageList> with SingleTickerProviderStat
   late AnimationController _animationController;
   late Animation<double> _opacityAnimation;
   late Animation<Offset> _slideAnimation;
+
+  Iterable<ScMessage> knownMessages = [];
 
   @override
   void initState() {
@@ -33,11 +37,24 @@ class _MessageListState extends State<MessageList> with SingleTickerProviderStat
     super.dispose();
   }
 
+  Iterable<ScMessage> getNewMessages(Iterable<ScMessage> newList) {
+    var newMessages = newList.where((element) => !knownMessages.contains(element));
+    return newMessages;
+  }
+
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
       valueListenable: Hive.box<ScMessage>("messages").listenable(),
       builder: (context, messages, child) {
+        //fins all messages that are not in knownMessages
+        var newMessages = getNewMessages(messages.values);
+        //add all messages to knownMessages
+        knownMessages = messages.values;
+
+        
+
+        //show newest messages first
         var sorted = messages.values.toList()..sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
         return SliverList.builder(
