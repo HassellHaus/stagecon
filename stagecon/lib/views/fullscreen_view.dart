@@ -1,9 +1,11 @@
 import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:stagecon/widgets/cue_lights/cue_light_fullscreen_grid.dart';
 import 'package:stagecon/widgets/cue_lights/cue_light_grid.dart';
+import 'package:stagecon/widgets/messages/message_fullscreen_container.dart';
 import 'package:stagecon/widgets/timers/timer_grid.dart';
 
 class FullScreenView extends StatelessWidget {
@@ -13,7 +15,7 @@ class FullScreenView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CupertinoTheme(data: CupertinoThemeData(brightness: Brightness.dark), child: 
+    return Theme(data: ThemeData.dark(), child: CupertinoTheme(data: CupertinoThemeData(brightness: Brightness.dark), child: 
     GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () {
@@ -23,7 +25,8 @@ class FullScreenView extends StatelessWidget {
       },
       child: Container(
         color: CupertinoColors.black,
-        child: LayoutBuilder(builder: (_, constraints) { 
+        child: MessageFullScreenContainer( // shows messages to the side of hte content
+          child: LayoutBuilder(builder: (_, constraints) { 
           
         //   return Column(
         //   children: [
@@ -50,6 +53,6 @@ class FullScreenView extends StatelessWidget {
         // const TimerGrid(),
         
       ),
-    ));
+    ))));
   }
 }

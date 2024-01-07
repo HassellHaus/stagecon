@@ -9,7 +9,7 @@ enum ServerMessageDataType {
 }
 enum ServerMessageMethod {
   upsert,
-  delete
+  delete,
 }
 
 

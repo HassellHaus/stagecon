@@ -81,12 +81,14 @@ class _DesktopViewState extends State<DesktopView> {
           startWidth: 200,
           minWidth: 200,
           maxWidth: 300,
+          
           // windowBreakpoint: 0,
           shownByDefault: false,
           builder: (context, _) {
             // return const Center(
             //   child: Text('End Sidebar'),
             // );
+            
             return const SidebarView();
           },
         ),

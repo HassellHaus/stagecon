@@ -1,4 +1,6 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:stagecon/types/sc_message.dart';
@@ -29,26 +31,31 @@ class MessageItem extends StatelessWidget {
         border: message.senderDeviceId!=null?null:Border.all(color: MacosColors.separatorColor),
       
       ),
-      child: Column(
+      child: SelectionArea(child: 
+      
+      Column(
         mainAxisSize: MainAxisSize.min,
         
         mainAxisAlignment: MainAxisAlignment.center,
          
 
         children: [
+          Flexible(child: 
           Padding(
             // padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
             padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-            child: Text(message.title, style: MacosTheme.of(context).typography.title3),
-          ),
+            child: AutoSizeText(message.title, 
+            // maxLines: 10,
+            style: MacosTheme.of(context).typography.title3),
+          )),
           if(message.content!=null)
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-            child: Text(message.content!, style: MacosTheme.of(context).typography.body),
+            child: AutoSizeText(message.content!, style: MacosTheme.of(context).typography.body),
           ),
         ],
       )
-    )
+    ))
     
       ]);
   }

@@ -56,7 +56,7 @@ class _ProxyActivityIndicatorState extends State<ProxyActivityIndicator> {
           return ValueListenableBuilder(
               valueListenable: proxyController.server.sockets,
               builder: (context, clients, child) {
-                return Text("${clients.length} clients");
+                return Text("${clients.length} ${clients.length == 1?"Client":"Clients"}");
                 // return Row(
                 //   mainAxisSize: MainAxisSize.min,
                 //   children: [
