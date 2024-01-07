@@ -154,7 +154,7 @@ class ScProxyServer {
 
     //listen for timer events from hive
     timerSubscription = Hive.box<ScTimer>("timers").watch().listen(onTimerEvent);
-    // messageSubscription = Hive.box<ScMessage>("messages").watch().listen(onTimerEvent);
+    messageSubscription = Hive.box<ScMessage>("messages").watch().listen(onTimerEvent);
     cueLightSubscription = Hive.box<ScCueLight>("cuelights").watch().listen(onCueLightEvent);
 
 

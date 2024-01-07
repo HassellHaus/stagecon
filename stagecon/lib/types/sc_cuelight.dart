@@ -48,12 +48,17 @@ class ScCueLight {
 
   final String type = "cuelight";
 
+   @HiveField(6, defaultValue: false)
+   bool fromRemote = false;
+  
+
   ScCueLight({
     String? id, 
     DateTime? createdAt, 
     required this.color, 
     required this.state, 
     this.name,
+    this.fromRemote = false,
     this.toggleActive = false
   }) {
     this.id = id ?? const Uuid().v4();
@@ -83,6 +88,8 @@ class ScCueLight {
   static void deleteAll() {
     _cuelightBox.clear();
   }
+
+  
 
   
 

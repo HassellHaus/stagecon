@@ -69,7 +69,7 @@ class CueLightGrid extends StatelessWidget {
       return Wrap(
         spacing: 5,
         runSpacing: 5,
-        alignment: WrapAlignment.center,
+        // alignment: WrapAlignment.center,
         // runAlignment: WrapAlignment.center,
         children: cuelights.values
 

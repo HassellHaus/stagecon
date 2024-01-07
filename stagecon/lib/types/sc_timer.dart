@@ -129,6 +129,10 @@ class ScTimer {
   // @DurationConverter()
   // Duration pause;
 
+
+  @HiveField(11, defaultValue: false)
+   bool fromRemote = false;
+
   
   final String type = "timer";
 
@@ -137,6 +141,7 @@ class ScTimer {
     Duration initialStartingAt = const Duration(),
     this.msPrecision,
     this.flashRate,
+    this.fromRemote = false,
     this.mode = TimerMode.countdown,
     this.color = const Color(0xffffffff),
     String? id, 

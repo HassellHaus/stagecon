@@ -20,6 +20,7 @@ class _MessageTextboxState extends State<MessageTextbox> {
   }
 
   void submit() async {
+    if (_controller.text.isEmpty) return;
     var message = ScMessage(
       title: _controller.text, 
       // ttl: 

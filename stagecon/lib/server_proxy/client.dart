@@ -21,6 +21,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stagecon/controllers/OscController.dart';
 import 'package:stagecon/types/sc_cuelight.dart';
+import 'package:stagecon/types/sc_message.dart';
 import 'package:stagecon/types/sc_timer.dart';
 import 'package:stagecon/types/server_message.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -88,6 +89,7 @@ class ScProxyClient {
             if(serverMessage.method == ServerMessageMethod.upsert) {
               //convert to object
               var timer = ScTimer.fromJson(serverMessage.data!);
+              timer.fromRemote = true;
               timer.upsert();
             } else if(serverMessage.method == ServerMessageMethod.delete) {
               ScTimer.delete(serverMessage.target);
@@ -95,16 +97,17 @@ class ScProxyClient {
           }
 
           // //MARK: Messages
-          // if(serverMessage.dataType == ServerMessageDataType.message) {
-          //   // serverMessage.timerEvent.
-          //   if(serverMessage.method == ServerMessageMethod.upsert) {
-          //     //convert to object
-          //     var message = ScMessage.fromJson(serverMessage.data!);
-          //     message.upsert();
-          //   } else if(serverMessage.method == ServerMessageMethod.delete) {
-          //     ScMessage.delete(serverMessage.target);
-          //   }
-          // }
+          if(serverMessage.dataType == ServerMessageDataType.message) {
+            // serverMessage.timerEvent.
+            if(serverMessage.method == ServerMessageMethod.upsert) {
+              //convert to object
+              var message = ScMessage.fromJson(serverMessage.data!);
+              message.fromRemote = true;
+              message.upsert();
+            } else if(serverMessage.method == ServerMessageMethod.delete) {
+              ScMessage.delete(serverMessage.target);
+            }
+          }
 
           //MARK: Cuelights
           if(serverMessage.dataType == ServerMessageDataType.cuelight) {
@@ -112,6 +115,7 @@ class ScProxyClient {
             if(serverMessage.method == ServerMessageMethod.upsert) {
               //convert to object
               var cuelight = ScCueLight.fromJson(serverMessage.data!);
+              cuelight.fromRemote = true;
               cuelight.upsert();
             } else if(serverMessage.method == ServerMessageMethod.delete) {
               ScCueLight.delete(serverMessage.target);

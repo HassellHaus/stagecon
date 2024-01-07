@@ -11,7 +11,6 @@ class MessageList extends StatefulWidget {
   State<MessageList> createState() => _MessageListState();
 }
 
-
 class _MessageListState extends State<MessageList> with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _opacityAnimation;
@@ -25,7 +24,7 @@ class _MessageListState extends State<MessageList> with SingleTickerProviderStat
       duration: Duration(milliseconds: 500),
     );
     _opacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(_animationController);
-    _slideAnimation = Tween<Offset>(begin: Offset(0, 1), end: Offset.zero).animate(_animationController);
+    _slideAnimation = Tween<Offset>(begin: Offset(0, 0), end: Offset.zero).animate(_animationController);
   }
 
   @override
@@ -47,18 +46,27 @@ class _MessageListState extends State<MessageList> with SingleTickerProviderStat
             final isNewestMessage = index == 0;
 
             if (isNewestMessage) {
+              print("Newest Message: ${message.title}");
               _animationController.reset(); // Reset the animation controller
               _animationController.forward(); // Start the animation from the beginning
+              return FadeTransition(
+                  opacity: _opacityAnimation,
+                  child: SlideTransition(
+                    position: _slideAnimation,
+                    child: MessageItem(message: message),
+                  ));
             }
 
-            return AnimatedOpacity(
-              opacity: isNewestMessage ? _opacityAnimation.value : 1.0,
-              duration: Duration(milliseconds: 500),
-              child: SlideTransition(
-                position: isNewestMessage ? _slideAnimation : AlwaysStoppedAnimation(Offset.zero),
-                child: MessageItem(message: message),
-              ),
-            );
+            return MessageItem(message: message);
+
+            // return AnimatedOpacity(
+            //   opacity: isNewestMessage ? _opacityAnimation.value : 1.0,
+            //   duration: Duration(milliseconds: 500),
+            //   child: SlideTransition(
+            //     position: isNewestMessage ? _slideAnimation : AlwaysStoppedAnimation(Offset.zero),
+            //     child: MessageItem(message: message),
+            //   ),
+            // );
           },
           itemCount: sorted.length,
         );

@@ -37,7 +37,8 @@ class ScMessage {
   @HiveField(6)
   String? senderDeviceId;
   
-  
+  @HiveField(7, defaultValue: false)
+  bool fromRemote = false;
 
   // @JsonKey(includeFromJson: false, includeToJson: true)
   // DateTime? get  expiresAt { // expire after 10 minutes + ttl
@@ -59,6 +60,7 @@ class ScMessage {
     required this.title,
     this.content,
     this.ttl = const Duration(seconds: 5),
+    this.fromRemote = false,
     String? senderName,
     String? senderDeviceId,
     String? id, DateTime? createdAt}) {

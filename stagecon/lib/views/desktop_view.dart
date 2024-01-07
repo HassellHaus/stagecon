@@ -326,10 +326,11 @@ class _PageContainer extends StatelessWidget {
           startSize: 300,
 
           minSize: 100,
-          resizableSide: ResizableSide.top, builder: (context, scrollController) {
+          resizableSide: ResizableSide.top, 
+          builder: (context, scrollController) {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
+              // mainAxisSize: MainAxisSize.min,
               children: [
                 //Bottom tool bar
                 Container(
@@ -345,8 +346,11 @@ class _PageContainer extends StatelessWidget {
                     ],
                   ),
                 ),
-
-                const CueLightGrid(),
+                SingleChildScrollView(
+                  controller: scrollController,
+                  child: const CueLightGrid(),
+                )
+                
               ],
             );
             
