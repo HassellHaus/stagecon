@@ -130,7 +130,7 @@ class ScTimer {
   // Duration pause;
 
 
-  @HiveField(11, defaultValue: false)
+  @HiveField(12, defaultValue: false)
    bool fromRemote = false;
 
   

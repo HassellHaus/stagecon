@@ -41,7 +41,7 @@ class ServerProxyServerSockets extends ValueNotifier<List<ScSocketContainer>> {
     // value = value.where((element) => element.socket != socket.socket).toList();
     value.remove(socket);
     socket.socket.sink.close(status.goingAway);
-    socket.socket.stream.drain();
+    // socket.socket.stream.drain();
     notifyListeners();
   }
 
@@ -49,7 +49,7 @@ class ServerProxyServerSockets extends ValueNotifier<List<ScSocketContainer>> {
     value.removeWhere((element) {
         if( element.socket == socket ) {
           socket.sink.close(status.goingAway);
-          socket.stream.drain();
+          // socket.stream.drain();
           return true;
         } else {
           return false;
@@ -63,7 +63,7 @@ class ServerProxyServerSockets extends ValueNotifier<List<ScSocketContainer>> {
         //close all sockets
     for(var socket in value) {
       socket.socket.sink.close(status.goingAway);
-      socket.socket.stream.drain();
+      // socket.socket.stream.drain();
     }
     value.clear();
   }
@@ -154,7 +154,7 @@ class ScProxyServer {
 
     //listen for timer events from hive
     timerSubscription = Hive.box<ScTimer>("timers").watch().listen(onTimerEvent);
-    messageSubscription = Hive.box<ScMessage>("messages").watch().listen(onTimerEvent);
+    messageSubscription = Hive.box<ScMessage>("messages").watch().listen(onMessageEvent);
     cueLightSubscription = Hive.box<ScCueLight>("cuelights").watch().listen(onCueLightEvent);
 
 
@@ -179,7 +179,7 @@ class ScProxyServer {
         target: event.key,
         method: event.deleted ? ServerMessageMethod.delete : ServerMessageMethod.upsert,
         data: event.deleted ? null : (event.value as ScMessage).toJson(),
-        dataType: ServerMessageDataType.timer
+        dataType: ServerMessageDataType.message
       ).toJson()));
     }
   }

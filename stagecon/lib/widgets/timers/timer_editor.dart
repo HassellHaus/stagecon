@@ -39,6 +39,21 @@ class TimerEditor extends StatefulWidget {
 
           TimerEditor(timer: timer, editId: editId,),
 
+          const SizedBox(height: 4),
+
+          // CupertinoFormSection.insetGrouped(children: [
+          //   CupertinoListTile.notched(
+          //     title: const Text("Start when saved"), 
+          //     trailing: MacosSwitch(
+          //       value: timer.startWhenSaved, 
+          //       onChanged: (value) {
+          //         timer.startWhenSaved = value;
+          //       }
+          //     ),
+          //   )
+          // ])
+
+
           if(showSaveButton) StatefulBuilder(
             builder: (BuildContext context, setState) {
               return PushButton(

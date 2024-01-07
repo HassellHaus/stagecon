@@ -26,17 +26,28 @@ import 'package:stagecon/types/sc_timer.dart';
 import 'package:stagecon/types/server_message.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
+// const int CLIENT_RECONNECT_MAX_ATTEMPTS = 10; //mins
+
+enum ScProxyClientStatus {
+  disconnected,
+  reconnecting,
+  connected,
+}
+
 class ScProxyClient {
     OSCcontroler oscCon = Get.find();
     WebSocketChannel? channel;
     DateTime lastPing = DateTime.now();
 
     // var timerBox = Hive.box<ScTimer>('timers');
-    ValueNotifier<bool> isConnected = ValueNotifier(false);
+    ValueNotifier<ScProxyClientStatus> status = ValueNotifier(ScProxyClientStatus.disconnected);
 
     StreamSubscription<dynamic>? wsStream;
     
     Timer? pingTimer; 
+    Timer? reconnectTimer; 
+
+    int reconnectAttempts = 0;
 
     Uri? wsUrl;
     ScProxyClient() {
@@ -46,7 +57,7 @@ class ScProxyClient {
     _periodicPing(Timer timer) {
       if(DateTime.now().difference(lastPing) > const Duration(minutes: 1)) {
         print("No ping in 1 minutes.  Reconnecting");
-        isConnected.value = false;
+        
         reconnect(wsUrl: wsUrl!);
       }
     }
@@ -54,6 +65,8 @@ class ScProxyClient {
     reconnect({required Uri wsUrl}) async {
       this.wsUrl = wsUrl;
       disconnect();
+      status.value = ScProxyClientStatus.reconnecting;
+      reconnectAttempts++;
 
       try {
         channel = WebSocketChannel.connect(wsUrl);
@@ -63,12 +76,20 @@ class ScProxyClient {
       } catch (e) {
         print("Failed to connect to $wsUrl");
         print(e);
+
+        //try to reconnect
+        reconnectTimer = Timer(const Duration(seconds: 5), () {
+          
+          reconnect(wsUrl: wsUrl);
+        });
+
         return;
       }
       
       print("Listening as client to $wsUrl");
 
-      isConnected.value = true;
+      status.value = ScProxyClientStatus.connected;
+      reconnectAttempts = 0;
 
       pingTimer = Timer.periodic(const Duration(minutes: 1), _periodicPing);
       
@@ -131,11 +152,11 @@ class ScProxyClient {
         // channel.sink.close(status.goingAway);
       }, onError: (e) {
         print("Websocket Error: $e");
-        isConnected.value = false;
+        
         reconnect(wsUrl: wsUrl);
       }, onDone: () {
         print("Websocket Done");
-        isConnected.value = false;
+        
         reconnect(wsUrl: wsUrl);
       });
     }
@@ -144,13 +165,14 @@ class ScProxyClient {
       channel?.sink.close();
       wsStream?.cancel();
       pingTimer?.cancel();
+      reconnectTimer?.cancel();
       channel = null;
-      isConnected.value = false;
+      status.value = ScProxyClientStatus.disconnected;
     }
   
     void dispose() {
       disconnect();
-      isConnected.dispose();
+      status.dispose();
     }
     
 

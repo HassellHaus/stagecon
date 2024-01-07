@@ -20,15 +20,18 @@ class ScMessageAdapter extends TypeAdapter<ScMessage> {
       title: fields[1] as String,
       content: fields[2] as String?,
       ttl: fields[3] as Duration,
+      fromRemote: fields[7] == null ? false : fields[7] as bool,
+      senderName: fields[5] as String?,
+      senderDeviceId: fields[6] as String?,
       id: fields[0] as String?,
       createdAt: fields[4] as DateTime?,
-    )..senderName = fields[5] as String?;
+    );
   }
 
   @override
   void write(BinaryWriter writer, ScMessage obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -40,7 +43,11 @@ class ScMessageAdapter extends TypeAdapter<ScMessage> {
       ..writeByte(4)
       ..write(obj.createdAt)
       ..writeByte(5)
-      ..write(obj.senderName);
+      ..write(obj.senderName)
+      ..writeByte(6)
+      ..write(obj.senderDeviceId)
+      ..writeByte(7)
+      ..write(obj.fromRemote);
   }
 
   @override
@@ -64,11 +71,14 @@ ScMessage _$ScMessageFromJson(Map<String, dynamic> json) => ScMessage(
       ttl: json['ttl'] == null
           ? const Duration(seconds: 5)
           : Duration(microseconds: json['ttl'] as int),
+      fromRemote: json['fromRemote'] as bool? ?? false,
+      senderName: json['senderName'] as String?,
+      senderDeviceId: json['senderDeviceId'] as String?,
       id: json['id'] as String?,
       createdAt: json['createdAt'] == null
           ? null
           : DateTime.parse(json['createdAt'] as String),
-    )..senderName = json['senderName'] as String?;
+    );
 
 Map<String, dynamic> _$ScMessageToJson(ScMessage instance) => <String, dynamic>{
       'id': instance.id,
@@ -77,4 +87,6 @@ Map<String, dynamic> _$ScMessageToJson(ScMessage instance) => <String, dynamic>{
       'ttl': instance.ttl.inMicroseconds,
       'createdAt': instance.createdAt.toIso8601String(),
       'senderName': instance.senderName,
+      'senderDeviceId': instance.senderDeviceId,
+      'fromRemote': instance.fromRemote,
     };

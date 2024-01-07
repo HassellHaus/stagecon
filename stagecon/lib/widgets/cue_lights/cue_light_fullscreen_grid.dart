@@ -44,6 +44,27 @@ class CuelightFullscreenGrid extends StatelessWidget {
                 children: filteredCuelights.map((e) => 
                     _CueLightFullScreenBulb(cuelight: e,)
                   ).toList()
+                  //sorting may make the watcher loose their place
+                  // ..sort((a, b) {
+                  //   //sort using the following qualities:
+                  //   // active first, then acknowledged, then standby
+
+                  //   if(a.cuelight.state == CueLightState.active) { 
+                  //     return -1;
+                  //   } else if(b.cuelight.state == CueLightState.active) {
+                  //     return 1;
+                  //   } else if(a.cuelight.state == CueLightState.acknowledged) {
+                  //     return -1;
+                  //   } else if(b.cuelight.state == CueLightState.acknowledged) {
+                  //     return 1;
+                  //   } else if(a.cuelight.state == CueLightState.standby) {
+                  //     return -1;
+                  //   } else if(b.cuelight.state == CueLightState.standby) {
+                  //     return 1;
+                  //   } else {
+                  //     return 0;
+                  //   }
+                  // })
                  
                  
                 );
@@ -68,9 +89,9 @@ class __CueLightFullScreenBulbState extends State<_CueLightFullScreenBulb> {
     Widget child;
     if(widget.cuelight.state == CueLightState.active) {
       child= Container(
-        color: widget.cuelight.color,
+        color: widget.cuelight.color.withOpacity(0.95),
         child: Center(
-          child: AutoSizeText("GO ${(widget.cuelight.name ?? "").toUpperCase()}"),
+          child: AutoSizeText("GO \n${(widget.cuelight.name ?? "").toUpperCase()}"),
         ),
       );
     } else {
@@ -80,7 +101,7 @@ class __CueLightFullScreenBulbState extends State<_CueLightFullScreenBulb> {
           border: Border.all(color: widget.cuelight.color, width: 10)
         ),
         child: Center(
-          child: AutoSizeText("Standby ${widget.cuelight.name ?? ""}"),
+          child: AutoSizeText("Standby \n${widget.cuelight.name ?? ""}"),
         ),
       );
     }

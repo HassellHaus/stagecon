@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:macos_ui/macos_ui.dart';
+import 'package:stagecon/server_proxy/client.dart';
 import 'package:stagecon/server_proxy/proxy_controller.dart';
 
 class ProxyActivityIndicator extends StatefulWidget {
@@ -18,7 +19,7 @@ class _ProxyActivityIndicatorState extends State<ProxyActivityIndicator> {
 
   Widget _buildClientIndicator(BuildContext context) {
     return ValueListenableBuilder(
-        valueListenable: proxyController.client.isConnected,
+        valueListenable: proxyController.client.status,
         builder: (context, value, child) {
           return Row(
             mainAxisSize: MainAxisSize.min,
@@ -27,11 +28,19 @@ class _ProxyActivityIndicatorState extends State<ProxyActivityIndicator> {
                 width: 8,
                 height: 8,
                 decoration: BoxDecoration(
-                    color: value ? CupertinoColors.systemGreen : CupertinoColors.systemRed,
+                    color: switch(value) {
+                      ScProxyClientStatus.disconnected => CupertinoColors.systemRed,
+                      ScProxyClientStatus.reconnecting => CupertinoColors.systemOrange,
+                      ScProxyClientStatus.connected => CupertinoColors.systemGreen,
+                    },
                     borderRadius: BorderRadius.circular(100)),
               ),
               const SizedBox(width: 4),
-              value ? const Text("Connected") : const Text("Disconnected")
+              switch(value) {
+                ScProxyClientStatus.disconnected => const Text("Disconnected",),
+                ScProxyClientStatus.reconnecting => const Text("Reconnecting",),
+                ScProxyClientStatus.connected => const Text("Connected",),
+              },
             ],
           );
         });

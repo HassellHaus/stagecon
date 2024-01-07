@@ -66,6 +66,7 @@ class _NetworkInfoListSectionState extends State<NetworkInfoListSection> {
                     ),
                     if (otherDeviceIps.isNotEmpty)
                       Material(
+                          color: const Color(0x00000000),
                           child: ExpandablePanel(
                               header: CupertinoListTile.notched(
                                   title: const Text("View All"), onTap: () => expandableController.toggle()),
@@ -76,6 +77,7 @@ class _NetworkInfoListSectionState extends State<NetworkInfoListSection> {
                               ),
                               controller: expandableController,
                               theme: const ExpandableThemeData(
+                                
                                 tapHeaderToExpand: true,
                                 useInkWell: false,
                                 // controller: ExpandableController(),

@@ -34,7 +34,7 @@ SPEC CHECKSUMS:
   flutter_install_app_plugin: 01e38428efa58de7802c9b1c8c3e9dfbf5bd7f81
   network_info_plus: b78876159360f5580608c2cea620d6ceffabd0ad
   path_provider_foundation: 29f094ae23ebbca9d3d0cec13889cd9060c0e943
-  url_launcher_ios: 08a3dfac5fb39e8759aeb0abbd5d9480f30fc8b4
+  url_launcher_ios: bf5ce03e0e2088bad9cc378ea97fa0ed5b49673b
 
 PODFILE CHECKSUM: ef19549a9bc3046e7bb7d2fab4d021637c0c58a3
 

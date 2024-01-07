@@ -22,6 +22,7 @@ class ScCueLightAdapter extends TypeAdapter<ScCueLight> {
       color: fields[2] as Color,
       state: fields[3] as CueLightState,
       name: fields[4] as String?,
+      fromRemote: fields[6] == null ? false : fields[6] as bool,
       toggleActive: fields[5] as bool,
     );
   }
@@ -29,7 +30,7 @@ class ScCueLightAdapter extends TypeAdapter<ScCueLight> {
   @override
   void write(BinaryWriter writer, ScCueLight obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -41,7 +42,9 @@ class ScCueLightAdapter extends TypeAdapter<ScCueLight> {
       ..writeByte(4)
       ..write(obj.name)
       ..writeByte(5)
-      ..write(obj.toggleActive);
+      ..write(obj.toggleActive)
+      ..writeByte(6)
+      ..write(obj.fromRemote);
   }
 
   @override
@@ -116,6 +119,7 @@ ScCueLight _$ScCueLightFromJson(Map<String, dynamic> json) => ScCueLight(
       color: const ColorConverter().fromJson(json['color'] as int),
       state: $enumDecode(_$CueLightStateEnumMap, json['state']),
       name: json['name'] as String?,
+      fromRemote: json['fromRemote'] as bool? ?? false,
       toggleActive: json['toggleActive'] as bool? ?? false,
     );
 
@@ -127,6 +131,7 @@ Map<String, dynamic> _$ScCueLightToJson(ScCueLight instance) =>
       'state': _$CueLightStateEnumMap[instance.state]!,
       'name': instance.name,
       'toggleActive': instance.toggleActive,
+      'fromRemote': instance.fromRemote,
     };
 
 const _$CueLightStateEnumMap = {

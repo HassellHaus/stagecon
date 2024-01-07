@@ -19,6 +19,7 @@ class ScTimerAdapter extends TypeAdapter<ScTimer> {
     return ScTimer(
       msPrecision: fields[8] as int?,
       flashRate: fields[9] as int?,
+      fromRemote: fields[12] == null ? false : fields[12] as bool,
       mode: fields[2] as TimerMode,
       color: fields[3] as Color,
       id: fields[4] as String?,
@@ -35,7 +36,7 @@ class ScTimerAdapter extends TypeAdapter<ScTimer> {
   @override
   void write(BinaryWriter writer, ScTimer obj) {
     writer
-      ..writeByte(12)
+      ..writeByte(13)
       ..writeByte(0)
       ..write(obj._running)
       ..writeByte(1)
@@ -59,7 +60,9 @@ class ScTimerAdapter extends TypeAdapter<ScTimer> {
       ..writeByte(8)
       ..write(obj.msPrecision)
       ..writeByte(9)
-      ..write(obj.flashRate);
+      ..write(obj.flashRate)
+      ..writeByte(12)
+      ..write(obj.fromRemote);
   }
 
   @override
@@ -122,6 +125,7 @@ ScTimer _$ScTimerFromJson(Map<String, dynamic> json) => ScTimer(
           : Duration(microseconds: json['initialStartingAt'] as int),
       msPrecision: json['msPrecision'] as int?,
       flashRate: json['flashRate'] as int?,
+      fromRemote: json['fromRemote'] as bool? ?? false,
       mode: $enumDecodeNullable(_$TimerModeEnumMap, json['mode']) ??
           TimerMode.countdown,
       color: json['color'] == null
@@ -154,6 +158,7 @@ Map<String, dynamic> _$ScTimerToJson(ScTimer instance) => <String, dynamic>{
       'expired': instance.expired,
       'msPrecision': instance.msPrecision,
       'flashRate': instance.flashRate,
+      'fromRemote': instance.fromRemote,
     };
 
 const _$TimerModeEnumMap = {
