@@ -10,15 +10,18 @@ import 'package:hive/hive.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as shelf_io;
 import 'package:shelf_web_socket/shelf_web_socket.dart';
+import 'package:shelf_router/shelf_router.dart' as shelf_router;
 import 'package:stagecon/controllers/OscController.dart';
 import 'package:stagecon/types/sc_cuelight.dart';
 import 'package:stagecon/types/sc_message.dart';
 import 'package:stagecon/types/sc_timer.dart';
 import 'package:stagecon/types/server_message.dart';
+import 'package:stagecon/types/server_sync_message.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/status.dart' as status;
 
 const int clientPingGracePeriod = 10; //mins
+final _pref = Hive.box("preferences");
 
 class ScSocketContainer {
   HttpConnectionInfo? connectionInfo;
@@ -93,9 +96,39 @@ class ScProxyServer {
   Timer? pingTimer;
 
   Future<Response> serverHandler(Request request) async {
+      //router 
+      final router = shelf_router.Router();
+
+
+      //MARK: HTTP REST ENDPOINTS
+      router.get("/", (Request request) {
+        return Response.ok("Well arn't you a clever one ;) This is a websocket server. You should connect to it with a websocket client at '/v1/ws' instead. Or sync all the data at '/v1/api/sync'");
+      });
+
+      ///Sync all data endpoint
+      router.get("/v1/api/sync", (Request request) async {
+        
+        var data = ServerSyncMessage(
+          messages: Hive.box<ScMessage>("messages").values
+            .where((element) => element.fromRemote == _pref.get("proxy_client_enabled")) // only return messages that are not from the remote
+            .toList(), 
+          timers: Hive.box<ScTimer>("timers").values
+            .where((element) => element.fromRemote == _pref.get("proxy_client_enabled"))
+            .toList(), 
+          cuelights: Hive.box<ScCueLight>("cuelights").values
+            .where((element) => element.fromRemote == _pref.get("proxy_client_enabled"))
+            .toList()
+        );
+        
+
+        return Response.ok(jsonEncode(data.toJson()), headers: {"Content-Type": "application/json"});
+      });
+
+      //MARK: WEBSOCKET 
+
       final connectionInfo = (request.context['shelf.io.connection_info'] as HttpConnectionInfo?);
       
-      return webSocketHandler((WebSocketChannel webSocket) {
+      router.mount('/v1/ws', webSocketHandler((WebSocketChannel webSocket) {
         // webSocket.
         
         if(webSocket.closeCode != null) {
@@ -132,7 +165,9 @@ class ScProxyServer {
             return;
           },
         );
-      })(request);
+      }));
+
+      return router.call(request);
     }
 
   void serve({required int port}) async {
@@ -165,7 +200,7 @@ class ScProxyServer {
   onTimerEvent(BoxEvent event) {
     for(var socket in sockets.value) {
       socket.socket.sink.add(jsonEncode(ServerMessage(
-        target: event.key,
+        target: (event.key as String).replaceFirst(RegExp(r'^(local_|remote_)'), ""),
         method: event.deleted ? ServerMessageMethod.delete : ServerMessageMethod.upsert,
         data: event.deleted ? null : (event.value as ScTimer).toJson(),
         dataType: ServerMessageDataType.timer
@@ -176,7 +211,7 @@ class ScProxyServer {
   onMessageEvent(BoxEvent event) {
     for(var socket in sockets.value) {
       socket.socket.sink.add(jsonEncode(ServerMessage(
-        target: event.key,
+        target: (event.key as String).replaceFirst(RegExp(r'^(local_|remote_)'), ""),
         method: event.deleted ? ServerMessageMethod.delete : ServerMessageMethod.upsert,
         data: event.deleted ? null : (event.value as ScMessage).toJson(),
         dataType: ServerMessageDataType.message
@@ -187,7 +222,7 @@ class ScProxyServer {
   onCueLightEvent(BoxEvent event) {
     for(var socket in sockets.value) {
       socket.socket.sink.add(jsonEncode(ServerMessage(
-        target: event.key,
+        target: (event.key as String).replaceFirst(RegExp(r'^(local_|remote_)'), ""),
         method: event.deleted ? ServerMessageMethod.delete : ServerMessageMethod.upsert,
         data: event.deleted ? null : (event.value as ScCueLight).toJson(),
         dataType: ServerMessageDataType.cuelight

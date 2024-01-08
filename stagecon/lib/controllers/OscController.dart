@@ -5,6 +5,8 @@ import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 
 import 'package:stagecon/osc/osc.dart';
+import 'package:stagecon/types/sc_cuelight.dart';
+import 'package:stagecon/types/sc_message.dart';
 import 'package:stagecon/types/sc_timer.dart';
 
 
@@ -97,7 +99,7 @@ class OSCcontroler extends GetxController{
           // final 
           // callTimerEventListeners(TimerEventOptions(id: id, operation: TimerEventOperation.set, startingAt: duration, mode: timerMode));
           //get existing timer (if it exists)
-          ScTimer? existingTimer = ScTimer.get(id) ?? ScTimer();
+          ScTimer? existingTimer = ScTimer.get("local_$id") ?? ScTimer();
 
           existingTimer.id = id;
           existingTimer.initialStartingAt = duration;
@@ -115,7 +117,7 @@ class OSCcontroler extends GetxController{
         //MARK: all timer commands
         else if(timerCommand) {
           String id =  msg.arguments[0] as String;
-          ScTimer? existingTimer = ScTimer.get(id);
+          ScTimer? existingTimer = ScTimer.get("local_$id");
           if(existingTimer == null) {
             throw Exception("Unknown timer id: $id");
             
@@ -138,7 +140,7 @@ class OSCcontroler extends GetxController{
             // TimerEventStore.instance.upsert(ScTimerEvent(id: id, createdAt: DateTime.timestamp()));
             // callTimerEventListeners(TimerEventOptions(id: id, operation: TimerEventOperation.reset));
           } else if (msg.address.contains("/delete",15)) {
-            ScTimer.delete(id);
+            ScTimer.delete(existingTimer.dbId);
             // TimerEventStore.instance.value.removeWhere((key, value) => key == id);
             // callTimerEventListeners(TimerEventOptions(id: id, operation: TimerEventOperation.delete));
           } else if (msg.address.contains("/format",15)) {
@@ -181,18 +183,71 @@ class OSCcontroler extends GetxController{
         }
 
         //MARK: Messages
-        if(msg.address.startsWith("/stagecon/message")) {
-          print("GOT MESSAGE");
-          //message command
-          if(argLen == 0) {
-            throw Exception("Message must have a title.  /stagecon/message/ \"SOME TITLE\"");
+        if(msg.address.startsWith("/stagecon/message")) { // offset: 17
+          //Post Message
+          if(msg.address.contains("/post",17)) {
+            print("GOT MESSAGE");
+            //message command
+            if(argLen == 0) {
+              throw Exception("Message must have a title.  /stagecon/message/post \"SOME TITLE\"");
+            }
+            String title = msg.arguments[0] as String;
+            String? content =  argLen >1?msg.arguments[1] as String:null;
+            int ttl = argLen >2 ?msg.arguments[2] as int:3000;
+
+            ScMessage message = ScMessage(
+              // id: "osc_$title",
+              senderDeviceId: "OSC",
+              senderName: "System",
+              title: title, 
+              content: content, 
+              ttl: Duration(milliseconds: ttl)
+            );
+            await message.upsert();
+          // Get.showOverlay(asyncFunction: ()=>Future.delayed(Duration(milliseconds: ttl)), loadingWidget: MessageOverlay(title: title, content: content), opacity: 0.8 );
+          } else {
+            Get.showSnackbar(GetSnackBar(
+              title: "OSC Error: ${msg.address}",
+              duration: const Duration(seconds: 3),
+              message: "Unknown Message Operation",
+            ));
           }
-          String title = msg.arguments[0] as String;
-          String? content =  argLen >1?msg.arguments[1] as String:null;
-          int ttl = argLen >2 ?msg.arguments[2] as int:3000;
-          Get.showOverlay(asyncFunction: ()=>Future.delayed(Duration(milliseconds: ttl)), loadingWidget: MessageOverlay(title: title, content: content), opacity: 0.8 );
-          
         }
+
+        //MARK: Cuelights
+        if(msg.address.startsWith("/stagecon/cuelight")) { // offset: 18
+
+        
+        //update cuelight state
+          if(msg.address.contains("/state",18)) { /// "cuelight id" "state"
+
+            if(argLen < 2) {
+              throw Exception("Cuelight must have an id and a state.  /stagecon/cuelight/state \"SOME ID\" [inactive|standby|active]");
+            }
+            String id = msg.arguments[0] as String;
+            String state = msg.arguments[1] as String;
+
+            ScCueLight? existingCueLight = ScCueLight.get("local_$id");
+
+            if(existingCueLight == null) {
+              throw Exception("Unknown cuelight id: $id");
+            }
+
+            if(state == "inactive") {
+              existingCueLight.state = CueLightState.inactive;
+            } else if(state == "standby") {
+              existingCueLight.state = CueLightState.standby;
+            } else if(state == "active") {
+              existingCueLight.state = CueLightState.active;
+            } else {
+              throw Exception("Unknown cuelight state: $state");
+            }
+
+            await existingCueLight.upsert();
+
+          }
+        } 
+
 
         //mark: Setting 
 

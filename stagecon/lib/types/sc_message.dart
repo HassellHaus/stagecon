@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:stagecon/types/sc_cuelight.dart';
+import 'package:stagecon/types/shared_types.dart';
 import 'package:uuid/uuid.dart';
 
 
@@ -38,7 +39,7 @@ class ScMessage {
   String? senderDeviceId;
   
   @HiveField(7, defaultValue: false)
-  bool fromRemote = false;
+  final bool fromRemote;
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   bool get ttlExpired => DateTime.now().isAfter(createdAt.add(ttl));
@@ -93,9 +94,10 @@ class ScMessage {
   //   content = event.content;
   // }
 
+  String get dbId => "${fromRemote ? "remote" : "local"}_$id";
 
   Future<void> upsert() async {
-    await _messageBox.put(id, this);
+    await _messageBox.put(dbId, this);
     // notifyListeners();
     
   }
@@ -104,11 +106,19 @@ class ScMessage {
     return _messageBox.get(id);
   }
 
-  static void delete(String id) {
-    _messageBox.delete(id);
+  static Future<void> delete(String id) {
+    return _messageBox.delete(id);
   }
 
   static void deleteAll() {
     _messageBox.clear();
   }
+
+  ///Deletes all the messages that were created from a remote source  
+  static Future<List<void>> deleteAllRemote() {
+    return Future.wait(_messageBox.values.where((element) => element.fromRemote).map((element) {
+      return ScMessage.delete(element.dbId);
+    }));
+  }
+
 }

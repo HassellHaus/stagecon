@@ -74,7 +74,7 @@ class TimerItem extends StatelessWidget {
                           Flexible(child: FittedBox(child:_TimerItemButton(
                               hint: "Delete Timer",
                               onPressed: () {
-                                ScTimer.delete(timer.id);
+                                ScTimer.delete(timer.dbId);
                               },
                               child: const Icon(CupertinoIcons.trash)))),
 

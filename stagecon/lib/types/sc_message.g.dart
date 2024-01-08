@@ -69,7 +69,7 @@ ScMessage _$ScMessageFromJson(Map<String, dynamic> json) => ScMessage(
       title: json['title'] as String,
       content: json['content'] as String?,
       ttl: json['ttl'] == null
-          ? const Duration(seconds: 5)
+          ? const Duration(seconds: 10)
           : Duration(microseconds: json['ttl'] as int),
       fromRemote: json['fromRemote'] as bool? ?? false,
       senderName: json['senderName'] as String?,

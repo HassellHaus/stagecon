@@ -26,7 +26,7 @@ class MessageItem extends StatelessWidget {
     
     Container(
       decoration: BoxDecoration(
-        color: MacosColors.underPageBackgroundColor,
+        color: CupertinoColors.secondarySystemGroupedBackground.resolveFrom(context),
         borderRadius: BorderRadius.circular(10),
         border: message.senderDeviceId!=null?null:Border.all(color: MacosColors.separatorColor),
       

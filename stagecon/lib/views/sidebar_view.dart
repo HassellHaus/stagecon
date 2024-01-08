@@ -37,6 +37,7 @@ class _SidebarViewState extends State<SidebarView> {
             Column(children: [
               Expanded(
                 child: CustomScrollView(
+                  // shrinkWrap: true,
                   reverse: true,
                   slivers: [
                     MessageList(),

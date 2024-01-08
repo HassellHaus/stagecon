@@ -48,7 +48,7 @@ class _MessageListState extends State<MessageList> with SingleTickerProviderStat
       valueListenable: Hive.box<ScMessage>("messages").listenable(),
       builder: (context, messages, child) {
         //fins all messages that are not in knownMessages
-        var newMessages = getNewMessages(messages.values);
+        // var newMessages = getNewMessages(messages.values);
         //add all messages to knownMessages
         knownMessages = messages.values;
 

@@ -22,14 +22,14 @@ import 'package:stagecon/views/main_view.dart';
 import 'package:uuid/uuid.dart';
 
 void _createStarterCuelights() async  {
-    await ScCueLight(id: "red", name: "Red", color: Colors.red, state: CueLightState.inactive).upsert();
-    await ScCueLight(id: "green", name: "Green", color: Colors.green, state: CueLightState.inactive).upsert();
-    await ScCueLight(id: "blue", name: "Blue", color: Colors.blue, state: CueLightState.inactive).upsert();
-    await ScCueLight(id: "yellow", name: "Yellow", color: Colors.yellow, state: CueLightState.inactive).upsert();
-    await ScCueLight(id: "purple", name: "Purple", color: Colors.purple, state: CueLightState.inactive).upsert();
-    await ScCueLight(id: "orange", name: "Orange", color: Colors.orange, state: CueLightState.inactive).upsert();
-    await ScCueLight(id: "teal", name: "Teal", color: Colors.teal, state: CueLightState.inactive).upsert();
-    await ScCueLight(id: "brown", name: "Brown", color: Colors.brown, state: CueLightState.inactive).upsert();
+    await ScCueLight(id: "red", name: "Red", color: CupertinoColors.systemRed, state: CueLightState.inactive).upsert();
+    await ScCueLight(id: "green", name: "Green", color: CupertinoColors.systemGreen, state: CueLightState.inactive).upsert();
+    await ScCueLight(id: "blue", name: "Blue", color: CupertinoColors.systemBlue, state: CueLightState.inactive).upsert();
+    await ScCueLight(id: "yellow", name: "Yellow", color: CupertinoColors.systemYellow, state: CueLightState.inactive).upsert();
+    await ScCueLight(id: "purple", name: "Purple", color: CupertinoColors.systemPurple, state: CueLightState.inactive).upsert();
+    await ScCueLight(id: "orange", name: "Orange", color: CupertinoColors.systemOrange, state: CueLightState.inactive).upsert();
+    await ScCueLight(id: "teal", name: "Teal", color: CupertinoColors.systemTeal, state: CueLightState.inactive).upsert();
+    await ScCueLight(id: "brown", name: "Brown", color: CupertinoColors.systemBrown, state: CueLightState.inactive).upsert();
 }
 
 void main(List<String> args) async {
@@ -67,6 +67,8 @@ void main(List<String> args) async {
   var cuelightBox = await Hive.openBox<ScCueLight>('cuelights');
   var messageBox = await Hive.openBox<ScMessage>('messages');
 // cuelightBox.clear();
+// timerBox.clear();
+// messageBox.clear();
   if(cuelightBox.isEmpty) {
     _createStarterCuelights();
   }
@@ -188,7 +190,7 @@ class MyApp extends StatelessWidget {
               proxyController.dispose();
             },
             themeMode: ThemeMode.system,
-            title: 'StageCon',
+            title: 'Stagecon',
             theme: ThemeData(
               // This is the theme of your application.
               //

@@ -6,8 +6,10 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:stagecon/types/sc_timer.dart';
 import 'package:stagecon/widgets/timers/timer_item.dart';
 
+final _pref = Hive.box("preferences");
 class TimerGrid extends StatelessWidget {
   const TimerGrid({super.key});
+
 
   ///Clamps the cross count to a square power
   calculateCrossCount(int n) {
@@ -17,7 +19,9 @@ class TimerGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(valueListenable: Hive.box<ScTimer>("timers").listenable(), builder: (context, timers, child) {
-      int crossCount = timers.isNotEmpty?calculateCrossCount(timers.length):1;
+      var filteredTimers = timers.values.where((element) => element.fromRemote == _pref.get("proxy_client_enabled"));
+
+      int crossCount = filteredTimers.isNotEmpty?calculateCrossCount(filteredTimers.length):1;
       // double aspect =  MediaQuery.of(context).size.width / MediaQuery.of(context).size.height;
 
       // if(timers.length == 2) {
@@ -31,7 +35,7 @@ class TimerGrid extends StatelessWidget {
         double aspect =  constraints.maxWidth / constraints.maxHeight;
         print(constraints.minHeight);
 
-        if(timers.length == 2) {
+        if(filteredTimers.length == 2) {
           crossCount = 1;
           aspect = constraints.maxWidth / (constraints.maxHeight*0.5);
         }
@@ -39,7 +43,7 @@ class TimerGrid extends StatelessWidget {
             // shrinkWrap: true,
             crossAxisCount: crossCount,
             childAspectRatio: aspect,
-            children: timers.values
+            children: filteredTimers
                 .map((e) => TimerItem(
                       timer: e,
                 ))

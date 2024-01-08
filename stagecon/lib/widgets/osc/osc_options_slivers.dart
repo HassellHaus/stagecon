@@ -40,6 +40,8 @@ class _OSCOptionsSliversState extends State<OSCOptionsSlivers> {
     return MultiSliver(
       children: [
 
+        const SliverPadding(padding: EdgeInsets.only(top: 20)),
+
         SliverToBoxAdapter(
           child: CupertinoFormSection.insetGrouped(
             backgroundColor: const Color(0x00000000),

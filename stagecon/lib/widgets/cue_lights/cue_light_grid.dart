@@ -66,12 +66,14 @@ class CueLightGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(valueListenable: Hive.box<ScCueLight>("cuelights").listenable(), builder: (context, cuelights, child) {
+      var filtered = cuelights.values.where((element) => element.fromRemote == Hive.box("preferences").get("proxy_client_enabled"));
+      
       return Wrap(
         spacing: 5,
         runSpacing: 5,
         // alignment: WrapAlignment.center,
         // runAlignment: WrapAlignment.center,
-        children: cuelights.values
+        children: filtered
 
           .where((element) => !hideInactive || element.state != CueLightState.inactive)
             .map((e) => SizedBox(

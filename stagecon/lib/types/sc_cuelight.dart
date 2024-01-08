@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:hive/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:stagecon/type_converters.dart';
+import 'package:stagecon/types/shared_types.dart';
 import 'package:uuid/uuid.dart';
 
 part 'sc_cuelight.g.dart';
@@ -48,8 +49,8 @@ class ScCueLight {
 
   final String type = "cuelight";
 
-   @HiveField(6, defaultValue: false)
-   bool fromRemote = false;
+  @HiveField(6, defaultValue: false)
+  final bool fromRemote;
   
 
   ScCueLight({
@@ -70,9 +71,11 @@ class ScCueLight {
   
   Map<String, dynamic> toJson() => _$ScCueLightToJson(this);
 
+    String get dbId => "${fromRemote ? "remote" : "local"}_$id";
+
 
   Future<void> upsert() async {
-    await _cuelightBox.put(id, this);
+    await _cuelightBox.put(dbId, this);
     // notifyListeners();
     
   }
@@ -81,14 +84,20 @@ class ScCueLight {
     return _cuelightBox.get(id);
   }
 
-  static void delete(String id) {
-    _cuelightBox.delete(id);
+  static Future<void> delete(String id) {
+    return _cuelightBox.delete(id);
   }
 
   static void deleteAll() {
     _cuelightBox.clear();
   }
 
+    ///Deletes all the messages that were created from a remote source  
+  static Future<List<void>> deleteAllRemote() {
+    return Future.wait(_cuelightBox.values.where((element) => element.fromRemote).map((element) {
+      return ScCueLight.delete(element.dbId);
+    }));
+  }
   
 
   

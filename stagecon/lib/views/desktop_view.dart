@@ -9,6 +9,7 @@ import 'package:macos_ui/macos_ui.dart';
 import 'package:stagecon/controllers/app_state.dart';
 import 'package:stagecon/multi_window.dart';
 import 'package:stagecon/types/sc_timer.dart';
+import 'package:stagecon/views/AboutView.dart';
 import 'package:stagecon/views/ConfigurationView.dart';
 import 'package:stagecon/views/OSCLogView.dart';
 import 'package:stagecon/views/preferences_view.dart';
@@ -71,7 +72,7 @@ class _DesktopViewState extends State<DesktopView> {
                   label: Text('OSC'),
                 ),
                 SidebarItem(
-                  label: Text('Preferences'),
+                  label: Text('About'),
                 ),
               ],
             );
@@ -88,8 +89,14 @@ class _DesktopViewState extends State<DesktopView> {
             // return const Center(
             //   child: Text('End Sidebar'),
             // );
-            
+            // return SingleChildScrollView(
+            //   controller: _,
+            //   physics: const NeverScrollableScrollPhysics(),
+            //   child: const SidebarView()
+              
+            // );
             return const SidebarView();
+            
           },
         ),
 
@@ -250,7 +257,7 @@ class _DesktopViewState extends State<DesktopView> {
                         if(pageIndex == 2)
                           ContentArea(builder: (context, scroll) => CustomScrollView(controller: scroll, slivers: const [OSCOptionsSlivers(),],),),
                         if(pageIndex == 3)
-                          ContentArea(builder: (context, scroll) => const PreferencesView()),
+                          ContentArea(builder: (context, scroll) => const AboutView()),
 
                         
                         

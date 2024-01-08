@@ -43,7 +43,9 @@ class ProxyController extends GetxController {
         _pref.put("proxy_client_enabled", false);
         return;
       }
-      client.reconnect(wsUrl: Uri.parse("ws://$ip:$port"));
+      client.host = ip;
+      client.port = port;
+      client.reconnect();
     }
   }
 
@@ -72,9 +74,11 @@ class ProxyController extends GetxController {
         return;
       }
       if(event.key == "proxy_client_enabled") {
-        client.disconnect();
+        client.dispose();
         client = ScProxyClient();
-        client.reconnect(wsUrl: Uri.parse("ws://$ip:$port"));
+        client.host = ip;
+        client.port = port;
+        client.reconnect();
 
       }
 

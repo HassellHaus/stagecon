@@ -104,7 +104,7 @@ class _ProxyActivityIndicatorState extends State<ProxyActivityIndicator> {
                       if (clientEnabled && serverEnabled)
                         const SizedBox(
                           width: 10,
-                          child: Text("/"),
+                          child: Center(child: Text("/")),
                         ),
                       if (serverEnabled) _buildServerIndicator(context),
                     ],
