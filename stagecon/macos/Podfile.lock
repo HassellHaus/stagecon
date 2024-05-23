@@ -45,8 +45,8 @@ SPEC CHECKSUMS:
   macos_ui: 6229a8922cd97bafb7d9636c8eb8dfb0744183ca
   macos_window_utils: 933f91f64805e2eb91a5bd057cf97cd097276663
   network_info_plus: f4fbc7877ab7b3294500d9441dfa53cd54972d05
-  path_provider_foundation: 29f094ae23ebbca9d3d0cec13889cd9060c0e943
-  url_launcher_macos: d2691c7dd33ed713bf3544850a623080ec693d95
+  path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
+  url_launcher_macos: 5f437abeda8c85500ceb03f5c1938a8c5a705399
 
 PODFILE CHECKSUM: d95764278935236cd6d35ae2cca8054da3824881
 
