@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:stagecon/views/desktop_view.dart';
 import 'package:stagecon/views/fullscreen_view.dart';
+import 'package:stagecon/views/mobile_view.dart';
 
 class MainView extends StatefulWidget {
   const MainView({super.key});
@@ -32,10 +33,10 @@ class _MainViewState extends State<MainView> {
       if(box.get("full_screen_mode")) {
         return const FullScreenView(tapToClose: true,);
       } else {
-        if(Platform.isIOS || Platform.isAndroid) {
+        if((Platform.isIOS || Platform.isAndroid) && mediaQueryData.size.width < 600) {
           return CupertinoPageScaffold(
             backgroundColor: CupertinoColors.systemBackground.resolveFrom(context),
-            child: const DesktopView());
+            child: const MobileView());
         } else {
 
           return const DesktopView();

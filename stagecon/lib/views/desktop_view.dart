@@ -12,7 +12,8 @@ import 'package:stagecon/types/sc_timer.dart';
 import 'package:stagecon/views/AboutView.dart';
 import 'package:stagecon/views/ConfigurationView.dart';
 import 'package:stagecon/views/OSCLogView.dart';
-import 'package:stagecon/views/preferences_view.dart';
+import 'package:stagecon/views/fullscreen_view.dart';
+import 'package:stagecon/views/mobile_preferences_view.dart';
 import 'package:stagecon/views/sidebar_view.dart';
 import 'package:stagecon/widgets/cue_lights/cue_light_grid.dart';
 import 'package:stagecon/widgets/overlay_container.dart';
@@ -193,46 +194,7 @@ class _DesktopViewState extends State<DesktopView> {
                         showLabel: false,
                         icon: const MacosIcon(CupertinoIcons.fullscreen),
                         onPressed: () {
-                          //open multiwindow
-                          // if(Platform.isLinux || Platform.isMacOS || Platform.isWindows) {
-                          //   openFullscreenViewWindow();
-                          //   return;
-                          // }
-                          // setState(() {
-                          //ask the user if they want to enter fuillscreen mode
-                          showMacosAlertDialog(
-                            barrierDismissible: true,
-                            context: context,
-                            builder: (context) => MacosAlertDialog(
-                              appIcon: MacosIcon(CupertinoIcons.fullscreen, size: 50, color: CupertinoColors.systemRed.resolveFrom(context)),
-                              title: Text(
-                                'Enter Fullscreen Mode?',
-                                style: MacosTheme.of(context).typography.headline,
-                              ),
-                              message: Text(
-                                'Tap anywhere to exit fullscreen mode.  This will be remembered for future launches.',
-                                textAlign: TextAlign.center,
-                                style: MacosTypography.of(context).headline,
-                              ),
-                              primaryButton: PushButton(
-                                controlSize: ControlSize.large,
-                                child: const Text('Enter Fullscreen'),
-                                onPressed: () {
-                                  Hive.box("preferences").put("full_screen_mode", true);
-                                  Navigator.of(context).pop();
-                                },
-                              ),
-                              secondaryButton: PushButton(
-                                controlSize: ControlSize.large,
-                                secondary: true,
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: const Text('Cancel'),
-                              ),
-                            ));
-                                // Hive.box("preferences").put("full_screen_mode", true);
-                              // });
+                          FullScreenView.openWithModel(context);
                             },
                           ),
                           if(mediaQueryData.size.width > 556.0)

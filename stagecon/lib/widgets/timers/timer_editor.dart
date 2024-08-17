@@ -10,77 +10,90 @@ class TimerEditor extends StatefulWidget {
   final ScTimer timer;
   final bool editId;
 
-
-  static openModel(BuildContext context, {
-      required ScTimer timer, 
-      bool editId = true, 
-      bool saveOnClose = false, 
+  static openModel(BuildContext context,
+      {required ScTimer timer,
+      bool editId = true,
+      bool saveOnClose = false,
       bool showSaveButton = false,
-      bool showTitle = true
-    }) async {
+      bool showTitle = true}) async {
     bool saving = false;
-    await showMacosSheet(
-      barrierDismissible: true,
-      context: context, builder: (context) {
-      return MacosSheet(child: SingleChildScrollView(
-        child: Column(children: [
-          const SizedBox(height: 24),
 
-          if(showTitle) const Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(CupertinoIcons.clock_fill, size: 50,),
-                Text("Edit Timer", style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
-              ],
-            ),
+    var form = SingleChildScrollView(
+      child: Column(children: [
+        const SizedBox(height: 24),
 
-          const SizedBox(height: 8),
+        if (showTitle)
+          const Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                CupertinoIcons.clock_fill,
+                size: 50,
+              ),
+              Text("Edit Timer", style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
+            ],
+          ),
 
+        const SizedBox(height: 8),
 
-          TimerEditor(timer: timer, editId: editId,),
+        TimerEditor(
+          timer: timer,
+          editId: editId,
+        ),
 
-          const SizedBox(height: 4),
+        const SizedBox(height: 4),
 
-          // CupertinoFormSection.insetGrouped(children: [
-          //   CupertinoListTile.notched(
-          //     title: const Text("Start when saved"), 
-          //     trailing: MacosSwitch(
-          //       value: timer.startWhenSaved, 
-          //       onChanged: (value) {
-          //         timer.startWhenSaved = value;
-          //       }
-          //     ),
-          //   )
-          // ])
+        // CupertinoFormSection.insetGrouped(children: [
+        //   CupertinoListTile.notched(
+        //     title: const Text("Start when saved"),
+        //     trailing: MacosSwitch(
+        //       value: timer.startWhenSaved,
+        //       onChanged: (value) {
+        //         timer.startWhenSaved = value;
+        //       }
+        //     ),
+        //   )
+        // ])
 
-
-          if(showSaveButton) StatefulBuilder(
+        if (showSaveButton)
+          StatefulBuilder(
             builder: (BuildContext context, setState) {
               return PushButton(
                 controlSize: ControlSize.large,
                 child: const Text("Save"),
-                onPressed: () async { 
+                onPressed: () async {
                   setState(() => saving = true);
                   await timer.upsert();
-                  if(context.mounted) Navigator.of(context).pop();
+                  if (context.mounted) Navigator.of(context).pop();
                 },
               );
             },
           ),
-          
-        ]),
-      ));
-      
-      
-    });
-    if(saveOnClose && !saving) {
-      await timer.upsert();
-
+      ]),
+    );
+//if screen is smaller than 600 pixels, show a popup sheet
+    if (MediaQuery.of(context).size.width > 600) {
+      await showMacosSheet(
+          barrierDismissible: true,
+          context: context,
+          builder: (context) {
+            return MacosSheet(child: form);
+          });
+    } else {
+      await showCupertinoModalPopup(
+        context: context,
+        barrierDismissible: true,
+        
+        builder: (context) {
+          return CupertinoPageScaffold(child: Padding(padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom), child: form));
+        },
+      );
     }
-    
-  }
-  
 
+    if (saveOnClose && !saving) {
+      await timer.upsert();
+    }
+  }
 
   @override
   State<TimerEditor> createState() => _TimerEditorState();
@@ -94,7 +107,8 @@ class _TimerEditorState extends State<TimerEditor> {
   @override
   void initState() {
     tabController.addListener(changeMode);
-    durationEditorController = DurationEditorController(focusNode: durationEditorFocusNode, duration: widget.timer.initialStartingAt);
+    durationEditorController =
+        DurationEditorController(focusNode: durationEditorFocusNode, duration: widget.timer.initialStartingAt);
     tabController.index = widget.timer.mode == TimerMode.countdown ? 0 : 1;
     durationEditorController.addListener(() {
       setState(() {
@@ -120,58 +134,53 @@ class _TimerEditorState extends State<TimerEditor> {
     });
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     //pupup background
-    return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
+    return Column(mainAxisSize: MainAxisSize.min, children: [
+      //Kind Stopwatch/Countdown
+      MacosSegmentedControl(
+        tabs: const [
+          MacosTab(label: "Countdown"),
+          MacosTab(label: "Stopwatch"),
+        ],
+        controller: tabController,
+      ),
+      const SizedBox(height: 4),
+      //title
+      CupertinoFormSection.insetGrouped(
+        backgroundColor: const Color(0x00000000),
+        footer: const Text("Hint: You can write things like 1h 30m 15s 500ms"),
+        children: [
+          if (widget.editId)
+            CupertinoTextFormFieldRow(
+              placeholder: "Timer ID (Name)",
+              onChanged: (value) {
+                setState(() {
+                  widget.timer.id = value;
+                });
+              },
+            ),
 
-            //Kind Stopwatch/Countdown
-              MacosSegmentedControl(
-                tabs: const [
-                  MacosTab(label: "Countdown"),
-                  MacosTab(label: "Stopwatch"),
-                ],
-                controller: tabController,
-              ),
-              const SizedBox(height: 4),
-          //title
-          CupertinoFormSection.insetGrouped(
-            backgroundColor: const Color(0x00000000),
-            children: [
-              if(widget.editId)
-              CupertinoTextFormFieldRow(
-                placeholder: "Timer ID (Name)",
-                onChanged: (value) {
-                  setState(() {
-                    widget.timer.id = value;
-                  });
-                },
-              ),
+          //TODO: actual timer editor goes here
 
-              
+          CupertinoTextFormFieldRow(
+            placeholder: "Starting at (MS)",
+            // keyboardType: TextInputType.text
+            focusNode: durationEditorFocusNode,
+            controller: durationEditorController,
 
-              //TODO: actual timer editor goes here
-              
-                CupertinoTextFormFieldRow(
-                  placeholder: "Starting at (MS)",
-                  keyboardType: TextInputType.number,
-                  focusNode: durationEditorFocusNode,
-                  controller: durationEditorController,
+            // inputFormatters: [TextInputFormatter.withFunction((oldValue, newValue) => null)],
+            // onChanged: (value) {
+            //   setState(() {
+            //     widget.timer.startingAt = Duration(milliseconds: int.tryParse(value) ?? 0);
+            //   });
+            // },
+          ),
+          
+        ],
 
-                  // inputFormatters: [TextInputFormatter.withFunction((oldValue, newValue) => null)],
-                  // onChanged: (value) {
-                  //   setState(() {
-                  //     widget.timer.startingAt = Duration(milliseconds: int.tryParse(value) ?? 0);
-                  //   });
-                  // },
-                ),
-              
-            ],
-          )
-        ]);
+      )
+    ]);
   }
 }

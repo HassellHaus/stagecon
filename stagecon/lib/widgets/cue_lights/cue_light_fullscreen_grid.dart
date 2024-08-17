@@ -39,6 +39,9 @@ class CuelightFullscreenGrid extends StatelessWidget {
             }
             return GridView.count(
                 // shrinkWrap: true,
+                padding: const EdgeInsets.all(0),
+                // controller: Scro,
+                physics: const NeverScrollableScrollPhysics(),
                 crossAxisCount: crossCount,
                 childAspectRatio: aspect,
                 children: filteredCuelights.map((e) => 

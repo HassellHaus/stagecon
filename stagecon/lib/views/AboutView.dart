@@ -8,10 +8,7 @@ class AboutView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTextStyle(style: CupertinoTheme.of(context).textTheme.textStyle, child: CupertinoPageScaffold(
-      backgroundColor: CupertinoColors.systemGroupedBackground.resolveFrom(context),
-      navigationBar: const CupertinoNavigationBar(),
-      child: SingleChildScrollView(child: Column(children: [
+    return DefaultTextStyle(style: CupertinoTheme.of(context).textTheme.textStyle, child: SingleChildScrollView(child: Column(children: [
         SizedBox(height: 80 + MediaQuery.of(context).padding.top),
         //Logo 
         Column(
@@ -72,6 +69,6 @@ class AboutView extends StatelessWidget {
         // const OtherApps()
         
       ],)),
-    ));
+    );
   }
 }

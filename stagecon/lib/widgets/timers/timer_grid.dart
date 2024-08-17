@@ -41,6 +41,7 @@ class TimerGrid extends StatelessWidget {
         }
         return GridView.count(
             // shrinkWrap: true,
+            padding: EdgeInsets.all(0),
             crossAxisCount: crossCount,
             childAspectRatio: aspect,
             children: filteredTimers

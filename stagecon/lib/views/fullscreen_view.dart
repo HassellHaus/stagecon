@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:macos_ui/macos_ui.dart';
 import 'package:stagecon/widgets/cue_lights/cue_light_fullscreen_grid.dart';
 import 'package:stagecon/widgets/cue_lights/cue_light_grid.dart';
 import 'package:stagecon/widgets/messages/message_fullscreen_container.dart';
@@ -12,6 +13,41 @@ class FullScreenView extends StatelessWidget {
   const FullScreenView({super.key, this.tapToClose = false});
 
   final bool tapToClose;
+
+
+  static openWithModel(BuildContext context) {
+    showMacosAlertDialog(
+                            barrierDismissible: true,
+                            context: context,
+                            builder: (context) => MacosAlertDialog(
+                              appIcon: MacosIcon(CupertinoIcons.fullscreen, size: 50, color: CupertinoColors.systemRed.resolveFrom(context)),
+                              title: Text(
+                                'Enter Fullscreen Mode?',
+                                style: MacosTheme.of(context).typography.headline,
+                              ),
+                              message: Text(
+                                'Tap anywhere to exit fullscreen mode.  This will be remembered for future launches.',
+                                textAlign: TextAlign.center,
+                                style: MacosTypography.of(context).headline,
+                              ),
+                              primaryButton: PushButton(
+                                controlSize: ControlSize.large,
+                                child: const Text('Enter Fullscreen'),
+                                onPressed: () {
+                                  Hive.box("preferences").put("full_screen_mode", true);
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                              secondaryButton: PushButton(
+                                controlSize: ControlSize.large,
+                                secondary: true,
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Text('Cancel'),
+                              ),
+                            ));
+  }
 
   @override
   Widget build(BuildContext context) {
