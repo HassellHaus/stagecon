@@ -63,7 +63,7 @@ class _MessageListState extends State<MessageList> with SingleTickerProviderStat
             final isNewestMessage = index == 0;
 
             if (isNewestMessage) {
-              print("Newest Message: ${message.title}");
+              print("Newest Message: ${message.title}, ${message.id}");
               _animationController.reset(); // Reset the animation controller
               _animationController.forward(); // Start the animation from the beginning
               return FadeTransition(

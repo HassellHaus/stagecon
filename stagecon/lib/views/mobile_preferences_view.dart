@@ -44,7 +44,7 @@ class _PreferencesViewState extends State<PreferencesView> {
           title: const Text("About"),
           trailing: const Icon(CupertinoIcons.right_chevron),
           onTap: () {
-            Navigator.of(context).push(CupertinoPageRoute(builder: (context) => _MobilePreferencesPageContainerView(title: "About", child: const AboutView())));
+            Navigator.of(context).push(CupertinoPageRoute(builder: (context) => const _MobilePreferencesPageContainerView(title: "About", child: const AboutView())));
           },
         ),
       ],
@@ -70,7 +70,7 @@ class _PreferencesViewState extends State<PreferencesView> {
           ],
         ),
       ),
-      child: Padding(padding: EdgeInsets.only(top: 40), child: child),
+      child: Padding(padding: const EdgeInsets.only(top: 100), child: child),
     );
   }
 }

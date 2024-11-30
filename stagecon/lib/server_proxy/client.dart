@@ -186,7 +186,7 @@ class ScProxyClient {
 
               message.upsert();
             } else if(serverMessage.method == ServerMessageMethod.delete) {
-              ScMessage.delete("remote_${serverMessage.target}");
+              ScMessage.delete(serverMessage.target, fromRemote: true);
             }
           }
 

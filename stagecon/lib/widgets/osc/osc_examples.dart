@@ -34,7 +34,9 @@ class OSCExamples extends StatelessWidget {
               _Example(title: "More functions coming soon"),
             ],)),
             _ExpandableExample(title: "Messages", child: Column(children: [
-              _Example(title: "Send a message", action: "/stagecon/message/post \"Message Title\" \"Message Content\" ttl(ms)"),
+              _Example(title: "Send a message", action: "/stagecon/message/post \"Message Title\" [\"Message Content\"] [ttl(ms)] [\"Message ID\"]"),
+              _Example(title: "Revoke a message", action: "/stagecon/message/revoke \"Message ID\""),
+              _Example(title: "A Message ID is optional, but is required to revoke a message"),
             ],)),
         // CupertinoListTile.notched(title: const Text("Timers"), )
       ]))

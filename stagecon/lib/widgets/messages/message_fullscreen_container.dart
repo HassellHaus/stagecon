@@ -62,7 +62,8 @@ class _MessageFullScreenContainerState extends State<MessageFullScreenContainer>
           Duration timeTillExpire = expireAt.difference(DateTime.now());
           
           var timer = Timer(timeTillExpire, () {
-            setState(() {});
+            mounted ? setState(() {}) : null;
+            // setState(() {});
           });
           ttlTimers.add(timer);
         }

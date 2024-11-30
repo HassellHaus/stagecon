@@ -106,8 +106,8 @@ class ScMessage {
     return _messageBox.get(id);
   }
 
-  static Future<void> delete(String id) {
-    return _messageBox.delete(id);
+  static Future<void> delete(String id, {bool fromRemote = false}) {
+    return _messageBox.delete("${fromRemote ? "remote" : "local"}_$id");
   }
 
   static void deleteAll() {
