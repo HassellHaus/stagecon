@@ -15,27 +15,63 @@ class OSCExamples extends StatelessWidget {
             backgroundColor: Colors.transparent,
             children: const [
             _ExpandableExample(title: "Timers", child: Column(children: [
-              _Example(title: "Create/Edit a timer", action: "/stagecon/[countdown|stopwatch]/set \"Timer Name\" ms s m h d"),
+              _ExpandableExample(title: "Create/Edit a timer", child: Column(children: [
+                _Example(title: "  Command", action: "/stagecon/(countdown|stopwatch)/set \"Timer Name\" ms{int} [s{int}] [m{int}] [h{int}] [d{int}] "),
+                _ExpandableExample(title: "  Parameters", child: Column(children: [
+                  _Example(title: "ms", action: "milliseconds"),
+                  _Example(title: "s", action: "seconds"),
+                  _Example(title: "m", action: "minutes"),
+                  _Example(title: "h", action: "hours"),
+                  _Example(title: "d", action: "days"),
+                  Text("Any of the parameters inside brackets can be omitted")
+                ])),
+                // _Example(title: "Command", action: "/stagecon/(countdown|stopwatch)/set \"Timer Name\" ms(int) [s(int)] [m(int)] [h(int)] [d(int)] "),
+                _ExpandableExample(title: "  Examples", child: Column(children: [
+                    _Example(title: "Create a countdown timer with 1 hour 10 seconds", action: "/stagecon/countdown/set \"Countdown Timer\" 0 10 0 1"),
+                    _Example(title: "Create a stopwatch timer that counts up starting at 0", action: "/stagecon/stopwatch/set \"Stopwatch Timer\" 0 0 0 0 0"),
+
+
+                ]))
+              ])),
+              // _Example(title: "Create/Edit a timer", action: "/stagecon/[countdown|stopwatch]/set \"Timer Name\" ms s m h d"),
               _Example(title: "Reset a timer", action: "/stagecon/timer/reset \"Timer Name\""),
               _Example(title: "Start/resume a timer", action: "/stagecon/timer/start \"Timer Name\""),
               _Example(title: "Stop/pause a timer", action: "/stagecon/timer/stop \"Timer Name\""),
               _Example(title: "Delete a timer", action: "/stagecon/timer/delete \"Timer Name\""),
               _Example(title: "Delete all timers", action: "/stagecon/timer/deleteAll"),
-              _Example(title: "Delete all countdowns or stopwatches", action: "/stagecon/[countdown|stopwatch]/deleteAll"),
-              _Example(title: "Change a timer's color", action: "/stagecon/timer/format/color \"Timer Name\" r[0-255] g[0-255] b[0-255] a[0-255]"),
-              _Example(title: "Change the millisecond decimal precision", action: "/stagecon/timer/format/msPrecision \"Timer Name\" [0-3]"),
-              _Example(title: "Change countdown flash rate", action: "/stagecon/timer/format/flashRate \"Timer Name\" milliseconds(int)"),
+              _Example(title: "Delete all countdowns or stopwatches", action: "/stagecon/(countdown|stopwatch)/deleteAll"),
+              _ExpandableExample(title: "Change a timer's color", child: Column(children: [
+                _Example(title: "  Command", action: "/stagecon/timer/format/color \"Timer Name\" r(0-255) g(0-255) b(0-255) a(0-255)"),
+                _ExpandableExample(title: "  Parameters", child: Column(children: [
+                  _Example(title: "r", action: "red"),
+                  _Example(title: "g", action: "green"),
+                  _Example(title: "b", action: "blue"),
+                  _Example(title: "a", action: "alpha (opacity)") 
+                ])),
+                // _Example(title: "Command", action: "/stagecon/(countdown|stopwatch)/set \"Timer Name\" ms(int) [s(int)] [m(int)] [h(int)] [d(int)] "),
+                _ExpandableExample(title: "  Examples", child: Column(children: [
+                    _Example(title: "Make a timer red", action: "/stagecon/timer/format/color \"Some timer name\" 255 0 0 255"),
+                    _Example(title: "Make a timer blue", action: "/stagecon/timer/format/color \"Some timer name\" 0 0 255 255"),
+
+
+                ]))
+
+              ])),
+
+              _Example(title: "Change the millisecond decimal precision", action: "/stagecon/timer/format/msPrecision \"Timer Name\" decimalPlaces(0|1|2|3)"),
+              _Example(title: "Change countdown flash rate", action: "/stagecon/timer/format/flashRate \"Timer Name\" milliseconds{int}"),
 
                 
             ]),),
             _ExpandableExample(title: "Cue Lights", child: Column(children: [
-              _Example(title: "Set cuelight state", action: "/stagecon/cuelight/state \"Cuelight ID\" [inactive|standby|active]"),
+              _Example(title: "Set cuelight state", action: "/stagecon/cuelight/state \"Cuelight ID\" (inactive|standby|active)"),
               _Example(title: "The default cuelights have IDs that match their color in lowercase"),
               _Example(title: "More functions coming soon"),
             ],)),
             _ExpandableExample(title: "Messages", child: Column(children: [
-              _Example(title: "Send a message", action: "/stagecon/message/post \"Message Title\" [\"Message Content\"] [ttl(ms)] [\"Message ID\"]"),
+              _Example(title: "Send a message", action: "/stagecon/message/post \"Message Title\" [\"Message Content\"] [ttl{int}] [\"Message ID\"]"),
               _Example(title: "Revoke a message", action: "/stagecon/message/revoke \"Message ID\""),
+              _Example(title: "Revoke all Messages", action: "/stagecon/message/revokeAll"),
               _Example(title: "A Message ID is optional, but is required to revoke a message"),
             ],)),
         // CupertinoListTile.notched(title: const Text("Timers"), )
