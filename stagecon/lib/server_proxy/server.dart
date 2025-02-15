@@ -128,7 +128,7 @@ class ScProxyServer {
 
       final connectionInfo = (request.context['shelf.io.connection_info'] as HttpConnectionInfo?);
       
-      router.mount('/v1/ws', webSocketHandler((WebSocketChannel webSocket) {
+      router.mount('/v1/ws', webSocketHandler((WebSocketChannel webSocket, _) {
         // webSocket.
         
         if(webSocket.closeCode != null) {
